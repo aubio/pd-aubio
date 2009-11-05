@@ -1,7 +1,7 @@
 
 #include <m_pd.h>
 
-char aubio_version[] = "aubio external for pd, version 0.2";
+char aubio_version[] = "aubio external for pd, version " PACKAGE_VERSION;
 
 static t_class *aubio_class;
 
