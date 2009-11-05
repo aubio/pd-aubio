@@ -1,7 +1,7 @@
 dnl Process this file with autoconf to produce a configure script
 
 dnl Init autoconf
-AC_INIT([pd-aubio], [0.0.1])
+AC_INIT([pd-aubio], [0.2])
 AC_CONFIG_SRCDIR([aubio_setup.c])
 
 dnl Init automake
