@@ -3,21 +3,24 @@
 
 srcdir = '.'
 blddir = 'build'
+VERSION = '0.2'
 
 def set_options(opt):
-  opt.tool_options('compiler_cc')
+    opt.tool_options('compiler_cc')
 
 def configure(conf):
-  conf.check_tool('compiler_cc')
-  # required dependancies
-  conf.check_cfg(package = 'aubio', atleast_version = '0.4.0',
-    args = '--cflags --libs')
+    conf.check_tool('compiler_cc')
+    # required dependancies
+    conf.check_cfg(package = 'aubio', atleast_version = '0.4.0',
+            args = '--cflags --libs')
+    # check for puredata header
+    conf.check(header_name='m_pd.h')
 
 def build(bld):
     aubio_pd = bld.new_task_gen(
         features = 'cc cshlib',
         uselib = ['AUBIO'],
-        defines = ['PD'],
+        defines = ['PD', 'PACKAGE_VERSION=\"'+repr(VERSION)+"\""],
         install_path = '${PREFIX}/lib/pd/extra')
 
     if bld.env['DEST_OS'] == 'win32':
