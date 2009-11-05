@@ -11,6 +11,12 @@ To build everything, run the usual:
 
   $ ./configure && make 
 
+Alternatively, you can use waf. For instance, to build against aubio installed
+in /var/tmp/aubio:
+
+  $ PKG_CONFIG_PATH=/var/tmp/aubio/lib/pkgconfig waf \
+      distclean configure build install --prefix=/var/tmp/aubio 
+
 Installing
 ----------
 
