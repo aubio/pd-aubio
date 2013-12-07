@@ -1,15 +1,16 @@
 #! /usr/bin/python
+
 # build puredata external
 
-srcdir = '.'
-blddir = 'build'
+top = '.'
+out = 'build'
 VERSION = '0.2'
 
-def set_options(opt):
-    opt.tool_options('compiler_cc')
+def options(ctx):
+    ctx.load('compiler_c')
 
 def configure(conf):
-    conf.check_tool('compiler_cc')
+    conf.load('compiler_c')
     # required dependancies
     conf.check_cfg(package = 'aubio', atleast_version = '0.4.0',
             args = '--cflags --libs')
