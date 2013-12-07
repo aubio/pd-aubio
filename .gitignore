@@ -1,0 +1,8 @@
+# vi stuff
+*.~[0-9]~
+*.swp
+
+# waf stuff
+.lock-waf*
+.waf-*
+build/
