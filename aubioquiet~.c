@@ -38,7 +38,7 @@ static t_int *aubioquiet_tilde_perform(t_int *w)
 	int j;
 	for (j=0;j<n;j++) {
 		/* write input to datanew */
-		fvec_write_sample(x->vec, in[j], 0, x->pos);
+		fvec_set_sample(x->vec, in[j], x->pos);
 		/*time for fft*/
 		if (x->pos == x->hopsize-1) {         
 			/* block loop */
@@ -77,7 +77,7 @@ static void aubioquiet_tilde_debug(t_aubioquiet_tilde *x)
 	post("aubioquiet~ bufsize:\t%d", x->bufsize);
 	post("aubioquiet~ hopsize:\t%d", x->hopsize);
 	post("aubioquiet~ threshold:\t%f", x->threshold);
-	post("aubioquiet~ audio in:\t%f", x->vec->data[0][0]);
+	post("aubioquiet~ audio in:\t%f", x->vec->data[0]);
 }
 
 static void *aubioquiet_tilde_new (t_floatarg f)
@@ -89,7 +89,7 @@ static void *aubioquiet_tilde_new (t_floatarg f)
 	x->bufsize   = 1024;
 	x->hopsize   = x->bufsize / 2;
 
-	x->vec = (fvec_t *)new_fvec(x->hopsize,1);
+	x->vec = (fvec_t *)new_fvec(x->hopsize);
 	x->wassilence = 1;
 
   	floatinlet_new (&x->x_obj, &x->threshold);
