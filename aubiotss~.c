@@ -46,7 +46,7 @@ static t_int *aubiotss_tilde_perform(t_int *w)
 	int j;
 	for (j=0;j<n;j++) {
 		/* write input to datanew */
-		fvec_write_sample(x->vec, in[j], 0, x->pos);
+		fvec_set_sample(x->vec, in[j], x->pos);
 		/*time for fft*/
 		if (x->pos == x->hopsize-1) {         
 			/* block loop */
@@ -62,8 +62,8 @@ static t_int *aubiotss_tilde_perform(t_int *w)
 			x->pos = -1; /* so it will be zero next j loop */
 		}
 		x->pos++;
-		*outtrans++ = x->trans->data[0][x->pos];
-		*outstead++ = x->stead->data[0][x->pos];
+		*outtrans++ = x->trans->data[x->pos];
+		*outstead++ = x->stead->data[x->pos];
 	}
 	return (w+6);
 }
@@ -79,8 +79,8 @@ static void aubiotss_tilde_debug(t_aubiotss_tilde *x)
 	post("aubiotss~ bufsize:\t%d", x->bufsize);
 	post("aubiotss~ hopsize:\t%d", x->hopsize);
 	post("aubiotss~ threshold:\t%f", x->thres);
-	post("aubiotss~ audio in:\t%f", x->vec->data[0][0]);
-	post("aubiotss~ audio out:\t%f", x->stead->data[0][0]);
+	post("aubiotss~ audio in:\t%f", x->vec->data[0]);
+	post("aubiotss~ audio out:\t%f", x->stead->data[0]);
 }
 
 static void *aubiotss_tilde_new (t_floatarg f)
@@ -93,20 +93,20 @@ static void *aubiotss_tilde_new (t_floatarg f)
 	x->bufsize  = 1024; //(bufsize < 64) ? 1024: (bufsize > 16385) ? 16385: bufsize;
 	x->hopsize  = x->bufsize / 4;
 
-	x->vec = (fvec_t *)new_fvec(x->hopsize,1);
+	x->vec = (fvec_t *)new_fvec(x->hopsize);
 
-	x->fftgrain  = (cvec_t *)new_cvec(x->bufsize,1);
-	x->ctrans = (cvec_t *)new_cvec(x->bufsize,1);
-	x->cstead = (cvec_t *)new_cvec(x->bufsize,1);
+	x->fftgrain  = (cvec_t *)new_cvec(x->bufsize);
+	x->ctrans = (cvec_t *)new_cvec(x->bufsize);
+	x->cstead = (cvec_t *)new_cvec(x->bufsize);
 
-	x->trans = (fvec_t *)new_fvec(x->hopsize,1);
-	x->stead = (fvec_t *)new_fvec(x->hopsize,1);
+	x->trans = (fvec_t *)new_fvec(x->hopsize);
+	x->stead = (fvec_t *)new_fvec(x->hopsize);
 
-	x->pv  = (aubio_pvoc_t *)new_aubio_pvoc(x->bufsize, x->hopsize, 1);
-	x->pvt = (aubio_pvoc_t *)new_aubio_pvoc(x->bufsize, x->hopsize, 1);
-	x->pvs = (aubio_pvoc_t *)new_aubio_pvoc(x->bufsize, x->hopsize, 1);
+	x->pv  = (aubio_pvoc_t *)new_aubio_pvoc(x->bufsize, x->hopsize);
+	x->pvt = (aubio_pvoc_t *)new_aubio_pvoc(x->bufsize, x->hopsize);
+	x->pvs = (aubio_pvoc_t *)new_aubio_pvoc(x->bufsize, x->hopsize);
 
-	x->tss = (aubio_tss_t *)new_aubio_tss(x->bufsize, x->hopsize, 1);
+	x->tss = (aubio_tss_t *)new_aubio_tss(x->bufsize, x->hopsize);
 
   	floatinlet_new (&x->x_obj, &x->thres);
 	outlet_new(&x->x_obj, gensym("signal"));
