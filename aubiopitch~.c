@@ -39,12 +39,12 @@ static t_int *aubiopitch_tilde_perform(t_int *w)
 	int j;
 	for (j=0;j<n;j++) {
 		/* write input to datanew */
-		fvec_write_sample(x->vec, in[j], 0, x->pos);
+		fvec_set_sample(x->vec, in[j], x->pos);
 		/*time for fft*/
 		if (x->pos == x->hopsize-1) {         
 			/* block loop */
-			aubio_pitch_do(x->o,x->vec, x->pitchvec);
-			outlet_float(x->pitch, x->pitchvec->data[0][0]);
+			aubio_pitch_do(x->o, x->vec, x->pitchvec);
+			outlet_float(x->pitch, x->pitchvec->data[0]);
 			/* end of block loop */
 			x->pos = -1; /* so it will be zero next j loop */
 		}
@@ -63,7 +63,7 @@ static void aubiopitch_tilde_debug(t_aubiopitch_tilde *x)
 	post("aubiopitch~ bufsize:\t%d", x->bufsize);
 	post("aubiopitch~ hopsize:\t%d", x->hopsize);
 	post("aubiopitch~ threshold:\t%f", x->threshold);
-	post("aubiopitch~ audio in:\t%f", x->vec->data[0][0]);
+	post("aubiopitch~ audio in:\t%f", x->vec->data[0]);
 }
 
 //static void *aubiopitch_tilde_new (t_floatarg f)
@@ -76,11 +76,11 @@ static void *aubiopitch_tilde_new (t_symbol * s)
 	x->hopsize   = x->bufsize / 2;
 
 	//FIXME: get the real samplerate
-    x->o = new_aubio_pitch(s->s_name, x->bufsize, 
-            x->hopsize, 1, 44100.);
+  x->o = new_aubio_pitch(s->s_name, x->bufsize,
+      x->hopsize, 44100. );
 	aubio_pitch_set_tolerance (x->o, 0.7);
-	x->vec = (fvec_t *)new_fvec(x->hopsize,1);
-	x->pitchvec = (fvec_t *)new_fvec(1,1);
+	x->vec = (fvec_t *)new_fvec(x->hopsize);
+	x->pitchvec = (fvec_t *)new_fvec(1);
 
   	//floatinlet_new (&x->x_obj, &x->threshold);
 	x->pitch = outlet_new (&x->x_obj, &s_float);
@@ -91,7 +91,7 @@ static void *aubiopitch_tilde_new (t_symbol * s)
 
 static void *aubiopitch_tilde_del(t_aubiopitch_tilde *x)
 {
-    	del_aubio_pitch(x->o);
+  del_aubio_pitch(x->o);
 	del_fvec(x->vec);
 	del_fvec(x->pitchvec);
 	return 0;
