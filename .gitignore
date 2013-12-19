@@ -6,3 +6,6 @@
 .lock-waf*
 .waf-*
 build/
+
+# python stuff
+*.pyc
