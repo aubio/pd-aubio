@@ -114,4 +114,3 @@ void aubioquiet_tilde_setup (void)
 	CLASS_MAINSIGNALIN(aubioquiet_tilde_class, 
 			t_aubioquiet_tilde, threshold);
 }
-

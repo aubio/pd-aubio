@@ -1,9 +1,9 @@
 /**
  *
- * a puredata wrapper for aubio onset detection functions 
+ * a puredata wrapper for aubio onset detection functions
  *
  * Thanks to Johannes M Zmolnig for writing the excellent HOWTO:
- *       http://iem.kug.ac.at/pd/externals-HOWTO/  
+ *       http://iem.kug.ac.at/pd/externals-HOWTO/
  *
  * */
 

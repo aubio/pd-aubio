@@ -1,9 +1,9 @@
 /**
  *
- * a puredata wrapper for aubio tempo detection functions 
+ * a puredata wrapper for aubio tempo detection functions
  *
  * Thanks to Johannes M Zmolnig for writing the excellent HOWTO:
- *       http://iem.kug.ac.at/pd/externals-HOWTO/  
+ *       http://iem.kug.ac.at/pd/externals-HOWTO/
  *
  * */
 
@@ -16,7 +16,7 @@ static t_class *aubiotempo_tilde_class;
 
 void aubiotempo_tilde_setup (void);
 
-typedef struct _aubiotempo_tilde 
+typedef struct _aubiotempo_tilde
 {
   t_object x_obj;
   t_float threshold;
@@ -31,7 +31,7 @@ typedef struct _aubiotempo_tilde
   t_outlet *onsetbang;
 } t_aubiotempo_tilde;
 
-static t_int *aubiotempo_tilde_perform(t_int *w) 
+static t_int *aubiotempo_tilde_perform(t_int *w)
 {
   t_aubiotempo_tilde *x = (t_aubiotempo_tilde *)(w[1]);
   t_sample *in          = (t_sample *)(w[2]);
@@ -41,7 +41,7 @@ static t_int *aubiotempo_tilde_perform(t_int *w)
     /* write input to datanew */
     fvec_set_sample(x->vec, in[j], x->pos);
     /*time for fft*/
-    if (x->pos == x->hopsize-1) {         
+    if (x->pos == x->hopsize-1) {
       /* block loop */
       aubio_tempo_do (x->t, x->vec, x->output);
       if (x->output->data[0]) {
@@ -73,7 +73,7 @@ static void aubiotempo_tilde_debug(t_aubiotempo_tilde *x)
 
 static void *aubiotempo_tilde_new (t_floatarg f)
 {
-  t_aubiotempo_tilde *x = 
+  t_aubiotempo_tilde *x =
     (t_aubiotempo_tilde *)pd_new(aubiotempo_tilde_class);
 
   x->threshold = (f < 1e-5) ? 0.1 : (f > 10.) ? 10. : f;
@@ -111,13 +111,12 @@ void aubiotempo_tilde_setup (void)
       (t_method)aubiotempo_tilde_del,
       sizeof (t_aubiotempo_tilde),
       CLASS_DEFAULT, A_DEFFLOAT, 0);
-  class_addmethod(aubiotempo_tilde_class, 
-      (t_method)aubiotempo_tilde_dsp, 
+  class_addmethod(aubiotempo_tilde_class,
+      (t_method)aubiotempo_tilde_dsp,
       gensym("dsp"), 0);
-  class_addmethod(aubiotempo_tilde_class, 
+  class_addmethod(aubiotempo_tilde_class,
       (t_method)aubiotempo_tilde_debug,
       gensym("debug"), 0);
-  CLASS_MAINSIGNALIN(aubiotempo_tilde_class, 
+  CLASS_MAINSIGNALIN(aubiotempo_tilde_class,
       t_aubiotempo_tilde, threshold);
 }
-
