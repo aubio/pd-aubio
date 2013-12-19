@@ -39,15 +39,15 @@ static t_int *aubiotempo_tilde_perform(t_int *w)
   int j;
   for (j=0;j<n;j++) {
     /* write input to datanew */
-    fvec_write_sample(x->vec, in[j], 0, x->pos);
+    fvec_set_sample(x->vec, in[j], x->pos);
     /*time for fft*/
     if (x->pos == x->hopsize-1) {         
       /* block loop */
       aubio_tempo_do (x->t, x->vec, x->output);
-      if (x->output->data[0][0]) {
+      if (x->output->data[0]) {
         outlet_bang(x->tempobang);
       }
-      if (x->output->data[0][1]) {
+      if (x->output->data[1]) {
         outlet_bang(x->onsetbang);
       }
       /* end of block loop */
@@ -68,7 +68,7 @@ static void aubiotempo_tilde_debug(t_aubiotempo_tilde *x)
   post("aubiotempo~ bufsize:\t%d", x->bufsize);
   post("aubiotempo~ hopsize:\t%d", x->hopsize);
   post("aubiotempo~ threshold:\t%f", x->threshold);
-  post("aubiotempo~ audio in:\t%f", x->vec->data[0][0]);
+  post("aubiotempo~ audio in:\t%f", x->vec->data[0]);
 }
 
 static void *aubiotempo_tilde_new (t_floatarg f)
@@ -82,12 +82,12 @@ static void *aubiotempo_tilde_new (t_floatarg f)
   x->bufsize   = 1024;
   x->hopsize   = x->bufsize / 2;
 
-  x->t = new_aubio_tempo ("complex", x->bufsize, x->hopsize, 1,
+  x->t = new_aubio_tempo ("complex", x->bufsize, x->hopsize,
           (uint_t) sys_getsr ());
   aubio_tempo_set_silence(x->t,x->silence);
   aubio_tempo_set_threshold(x->t,x->threshold);
-  x->output = (fvec_t *)new_fvec(2,1);
-  x->vec = (fvec_t *)new_fvec(x->hopsize,1);
+  x->output = (fvec_t *)new_fvec(2);
+  x->vec = (fvec_t *)new_fvec(x->hopsize);
 
   floatinlet_new (&x->x_obj, &x->threshold);
   x->tempobang = outlet_new (&x->x_obj, &s_bang);
