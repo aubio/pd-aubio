@@ -75,9 +75,8 @@ static void *aubiopitch_tilde_new (t_symbol * s)
 	x->bufsize   = 2048;
 	x->hopsize   = x->bufsize / 2;
 
-	//FIXME: get the real samplerate
   x->o = new_aubio_pitch(s->s_name, x->bufsize,
-      x->hopsize, 44100. );
+      x->hopsize, (uint_t)sys_getsr() );
 	aubio_pitch_set_tolerance (x->o, 0.7);
 	x->vec = (fvec_t *)new_fvec(x->hopsize);
 	x->pitchvec = (fvec_t *)new_fvec(1);
