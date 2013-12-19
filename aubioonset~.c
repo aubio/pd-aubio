@@ -38,12 +38,12 @@ aubioonset_tilde_perform (t_int * w)
   int j;
   for (j = 0; j < n; j++) {
     /* write input to datanew */
-    fvec_write_sample (x->in, in[j], 0, x->pos);
+    fvec_set_sample (x->in, in[j], x->pos);
     /*time to do something */
     if (x->pos == x->hopsize - 1) {
       /* block loop */
       aubio_onset_do (x->o, x->in, x->out);
-      if (fvec_read_sample (x->out, 0, 0) > 0.) {
+      if (fvec_get_sample (x->out, 0) > 0.) {
         outlet_bang (x->onsetbang);
       }
       /* end of block loop */
@@ -66,8 +66,8 @@ aubioonset_tilde_debug (t_aubioonset_tilde * x)
   post ("aubioonset~ bufsize:\t%d", x->bufsize);
   post ("aubioonset~ hopsize:\t%d", x->hopsize);
   post ("aubioonset~ threshold:\t%f", x->threshold);
-  post ("aubioonset~ audio in:\t%f", x->in->data[0][0]);
-  post ("aubioonset~ onset:\t%f", x->out->data[0][0]);
+  post ("aubioonset~ audio in:\t%f", x->in->data[0]);
+  post ("aubioonset~ onset:\t%f", x->out->data[0]);
 }
 
 static void *
@@ -81,9 +81,9 @@ aubioonset_tilde_new (t_floatarg f)
   x->hopsize = x->bufsize / 2;
 
   x->o = new_aubio_onset ("complex",
-      x->bufsize, x->hopsize, 1, (uint_t) sys_getsr ());
-  x->in = (fvec_t *) new_fvec (x->hopsize, 1);
-  x->out = (fvec_t *) new_fvec (1, 1);
+      x->bufsize, x->hopsize, (uint_t) sys_getsr ());
+  x->in = (fvec_t *) new_fvec (x->hopsize);
+  x->out = (fvec_t *) new_fvec (1);
 
   floatinlet_new (&x->x_obj, &x->threshold);
   x->onsetbang = outlet_new (&x->x_obj, &s_bang);
