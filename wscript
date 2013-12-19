@@ -48,9 +48,6 @@ def build(bld):
         bld.env.cshlib_PATTERN = '%s.pd_linux'
         bld.env.append_unique('shlib_LINKFLAGS', ['--export_dynamic'])
 
-    # do not rename the shlib at all
-    bld.env.shlib_PATTERN = '%s'
-
     bld.install_files('${PREFIX}/lib/pd/doc/5.reference',
             bld.path.ant_glob('help/**.pd'))
 
