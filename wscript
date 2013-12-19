@@ -4,45 +4,55 @@
 
 top = '.'
 out = 'build'
-VERSION = '0.2'
+APPNAME = 'pd-aubio'
+
+# source VERSION
+for l in open('VERSION').readlines(): exec (l.strip())
+VERSION = '.'.join ([str(x) for x in [
+    PD_AUBIO_MAJOR_VERSION,
+    PD_AUBIO_MINOR_VERSION,
+    ]]) + PD_AUBIO_VERSION_STATUS
 
 def options(ctx):
     ctx.load('compiler_c')
 
-def configure(conf):
-    conf.load('compiler_c')
-    # required dependancies
-    conf.check_cfg(package = 'aubio', atleast_version = '0.4.0',
-            args = '--cflags --libs')
+def configure(ctx):
+    ctx.load('compiler_c')
     # check for puredata header
-    conf.check(header_name='m_pd.h')
+    ctx.check(header_name='m_pd.h')
+    # required dependancies
+    ctx.check_cfg(package = 'aubio', atleast_version = '0.4.0',
+            args = '--cflags --libs')
 
 def build(bld):
-    aubio_pd = bld.new_task_gen(
-        features = 'cc cshlib',
+
+    uselib = ['AUBIO']
+    bld(features = 'c cshlib',
+        source = bld.path.ant_glob('*.c'),
         uselib = ['AUBIO'],
+        target = 'aubio',
         defines = ['PD', 'PACKAGE_VERSION=\"'+repr(VERSION)+"\""],
         install_path = '${PREFIX}/lib/pd/extra')
 
     if bld.env['DEST_OS'] == 'win32':
-        aubio_pd.target = 'aubio.dll'
+        bld.env.cshlib_PATTERN = '%s.dll'
         # do not use -fPIC -DPIC on windows
-        aubio_pd.env.shlib_CCFLAGS.remove('-fPIC')
-        aubio_pd.env.shlib_CCFLAGS.remove('-DPIC')
-        aubio_pd.env.append_unique('shlib_LINKFLAGS', ['-export_dynamic', '-lpd'])
+        bld.env.cshlib_CCFLAGS.remove('-fPIC')
+        bld.env.cshlib_CCFLAGS.remove('-DPIC')
+        bld.env.append_unique('shlib_LINKFLAGS', ['-export_dynamic', '-lpd'])
     elif bld.env['DEST_OS'] == 'darwin':
-        aubio_pd.target = 'aubio.pd_darwin'
-        aubio_pd.env.append_unique('shlib_LINKFLAGS', 
+        bld.env.cshlib_PATTERN = '%s.pd_darwin'
+        bld.env.append_unique('shlib_LINKFLAGS',
             ['-bundle', '-undefined suppres', '-flat_namespace'])
     else: #if bld.env['DEST_OS'] == 'linux':
-        aubio_pd.target = 'aubio.pd_linux'
-        aubio_pd.env.append_unique('shlib_LINKFLAGS', ['--export_dynamic'])
+        bld.env.cshlib_PATTERN = '%s.pd_linux'
+        bld.env.append_unique('shlib_LINKFLAGS', ['--export_dynamic'])
 
     # do not rename the shlib at all
-    aubio_pd.env.shlib_PATTERN = '%s'
-    # get the source files
-    aubio_pd.find_sources_in_dirs('.')
+    bld.env.shlib_PATTERN = '%s'
 
-    bld.install_files('${PREFIX}/lib/pd/doc/5.reference', 'help/*.pd')
+    bld.install_files('${PREFIX}/lib/pd/doc/5.reference',
+            bld.path.ant_glob('help/**.pd'))
 
-    bld.install_files('${PREFIX}/lib/pd/doc/aubio', 'examples/*.pd')
+    bld.install_files('${PREFIX}/lib/pd/doc/aubio',
+            bld.path.ant_glob('examples/**.pd'))
