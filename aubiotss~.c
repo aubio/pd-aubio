@@ -11,7 +11,7 @@
 #define AUBIO_UNSTABLE 1
 #include <aubio/aubio.h>
 
-char aubiotss_version[] = "aubiotss~ version 0.1";
+char aubiotss_version[] = "aubiotss~ version " PACKAGE_VERSION;
 
 static t_class *aubiotss_tilde_class;
 

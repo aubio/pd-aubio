@@ -10,7 +10,7 @@
 #include <m_pd.h>
 #include <aubio/aubio.h>
 
-char aubiotempo_version[] = "aubiotempo~ version 0.2";
+char aubiotempo_version[] = "aubiotempo~ version " PACKAGE_VERSION;
 
 static t_class *aubiotempo_tilde_class;
 

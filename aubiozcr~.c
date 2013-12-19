@@ -11,7 +11,7 @@
 #include <m_pd.h>
 #include <aubio/aubio.h>
 
-char aubiozcr_version[] = "aubiozcr~ version 0.1";
+char aubiozcr_version[] = "aubiozcr~ version " PACKAGE_VERSION;
 
 static t_class *aubiozcr_tilde_class;
 

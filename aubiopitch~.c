@@ -11,7 +11,7 @@
 #include <aubio/aubio.h>
 #include <string.h>
 
-char aubiopitch_version[] = "aubiopitch~ version 0.1";
+char aubiopitch_version[] = "aubiopitch~ version " PACKAGE_VERSION;
 
 static t_class *aubiopitch_tilde_class;
 

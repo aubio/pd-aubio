@@ -10,7 +10,7 @@
 #include <m_pd.h>
 #include <aubio/aubio.h>
 
-char aubioonset_version[] = "aubioonset~ version 0.3";
+char aubioonset_version[] = "aubioonset~ version " PACKAGE_VERSION;
 
 static t_class *aubioonset_tilde_class;
 
