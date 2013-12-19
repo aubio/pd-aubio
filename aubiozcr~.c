@@ -35,7 +35,7 @@ static t_int *aubiozcr_tilde_perform(t_int *w)
 	int j;
 	for (j=0;j<n;j++) {
 		/* write input to datanew */
-		fvec_write_sample(x->vec, in[j], 0, x->pos);
+		fvec_set_sample(x->vec, in[j], x->pos);
 		/*time for fft*/
 		if (x->pos == x->bufsize-1) {         
 			/* block loop */
@@ -56,7 +56,7 @@ static void aubiozcr_tilde_dsp(t_aubiozcr_tilde *x, t_signal **sp)
 static void aubiozcr_tilde_debug(t_aubiozcr_tilde *x)
 {
 	post("aubiozcr~ bufsize:\t%d", x->bufsize);
-	post("aubiozcr~ audio in:\t%f", x->vec->data[0][0]);
+	post("aubiozcr~ audio in:\t%f", x->vec->data[0]);
 }
 
 static void *aubiozcr_tilde_new (void)
@@ -66,7 +66,7 @@ static void *aubiozcr_tilde_new (void)
 
 	x->bufsize   = 1024;
 
-	x->vec = (fvec_t *)new_fvec(x->bufsize,1);
+	x->vec = (fvec_t *)new_fvec(x->bufsize);
 
 	x->zcr = outlet_new (&x->x_obj, &s_float);
 	post(aubiozcr_version);
