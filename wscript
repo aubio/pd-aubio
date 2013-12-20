@@ -21,7 +21,6 @@ def configure(ctx):
 
     if ctx.env['DEST_OS'] == 'linux':
         ctx.env.cshlib_PATTERN = '%s.pd_linux'
-        ctx.env.LINKFLAGS_cshlib += ['--export_dynamic']
     elif ctx.env['DEST_OS'] == 'darwin':
         ctx.env.cshlib_PATTERN = '%s.pd_darwin'
         # add default include path for both pd and pd-extended
