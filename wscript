@@ -18,35 +18,42 @@ def options(ctx):
 
 def configure(ctx):
     ctx.load('compiler_c')
+
+    if ctx.env['DEST_OS'] == 'linux':
+        ctx.env.cshlib_PATTERN = '%s.pd_linux'
+        ctx.env.LINKFLAGS_cshlib += ['--export_dynamic']
+    elif ctx.env['DEST_OS'] == 'darwin':
+        ctx.env.cshlib_PATTERN = '%s.pd_darwin'
+        # add default include path for both pd and pd-extended
+        # set CFLAGS for custom location
+        ctx.env.CFLAGS += ['-I/Applications/Pd-0.45-3.app/Contents/Resources/src']
+        ctx.env.CFLAGS += ['-I/Applications/Pd-extended.app/Contents/Resources/include']
+        ctx.env.CFLAGS += ['-arch', 'i386', '-arch', 'x86_64']
+        ctx.env.LINKFLAGS += ['-arch', 'i386', '-arch', 'x86_64']
+        ctx.env.LINKFLAGS_cshlib = ['-bundle', '-undefined', 'suppress', '-flat_namespace']
+    elif ctx.env['DEST_OS'] in ['win32', 'win64']:
+        ctx.env.cshlib_PATTERN = '%s.dll'
+        # do not use -fPIC -DPIC on windows
+        ctx.env.CFLAGS_cshlib = []
+        ctx.env.LINKFLAGS_cshlib +=  ['-export_dynamic', '-lpd']
+    else:
+        ctx.fatal("Sorry, i don't know how to build for %s yet" % ctx.env['DEST_OS'])
+
     # check for puredata header
     ctx.check(header_name='m_pd.h')
-    # required dependancies
+
+    # required dependencies
     ctx.check_cfg(package = 'aubio', atleast_version = '0.4.0',
             args = '--cflags --libs')
 
 def build(bld):
 
-    uselib = ['AUBIO']
     bld(features = 'c cshlib',
         source = bld.path.ant_glob('*.c'),
         uselib = ['AUBIO'],
         target = 'aubio',
         defines = ['PD', 'PACKAGE_VERSION=\"'+repr(VERSION)+"\""],
         install_path = '${PREFIX}/lib/pd/extra')
-
-    if bld.env['DEST_OS'] == 'win32':
-        bld.env.cshlib_PATTERN = '%s.dll'
-        # do not use -fPIC -DPIC on windows
-        bld.env.cshlib_CCFLAGS.remove('-fPIC')
-        bld.env.cshlib_CCFLAGS.remove('-DPIC')
-        bld.env.append_unique('shlib_LINKFLAGS', ['-export_dynamic', '-lpd'])
-    elif bld.env['DEST_OS'] == 'darwin':
-        bld.env.cshlib_PATTERN = '%s.pd_darwin'
-        bld.env.append_unique('shlib_LINKFLAGS',
-            ['-bundle', '-undefined suppres', '-flat_namespace'])
-    else: #if bld.env['DEST_OS'] == 'linux':
-        bld.env.cshlib_PATTERN = '%s.pd_linux'
-        bld.env.append_unique('shlib_LINKFLAGS', ['--export_dynamic'])
 
     bld.install_files('${PREFIX}/lib/pd/doc/5.reference',
             bld.path.ant_glob('help/**.pd'))
