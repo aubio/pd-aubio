@@ -48,7 +48,7 @@ def configure(ctx):
 def build(bld):
 
     bld(features = 'c cshlib',
-        source = bld.path.ant_glob('*.c'),
+        source = bld.path.ant_glob('src/*.c'),
         uselib = ['AUBIO'],
         target = 'aubio',
         defines = ['PD', 'PACKAGE_VERSION=\"'+repr(VERSION)+"\""],
