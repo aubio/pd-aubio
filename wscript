@@ -52,10 +52,10 @@ def build(bld):
         uselib = ['AUBIO'],
         target = 'aubio',
         defines = ['PD', 'PACKAGE_VERSION=\"'+repr(VERSION)+"\""],
-        install_path = '${PREFIX}/lib/pd/extra')
+        install_path = '${PREFIX}/lib/pd/extra/aubio')
 
-    bld.install_files('${PREFIX}/lib/pd/doc/5.reference',
+    bld.install_files('${PREFIX}/lib/pd/extra/aubio',
             bld.path.ant_glob('help/**.pd'))
 
-    bld.install_files('${PREFIX}/lib/pd/doc/aubio',
+    bld.install_files('${PREFIX}/lib/pd/extra/aubio/examples',
             bld.path.ant_glob('examples/**.pd'))
