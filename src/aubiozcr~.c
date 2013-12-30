@@ -55,6 +55,7 @@ static void aubiozcr_tilde_dsp(t_aubiozcr_tilde *x, t_signal **sp)
 
 static void aubiozcr_tilde_debug(t_aubiozcr_tilde *x)
 {
+  post(aubiozcr_version);
   post("aubiozcr~ bufsize:\t%d", x->bufsize);
   post("aubiozcr~ audio in:\t%f", x->vec->data[0]);
 }
@@ -69,7 +70,6 @@ static void *aubiozcr_tilde_new (void)
   x->vec = (fvec_t *)new_fvec(x->bufsize);
 
   x->zcr = outlet_new (&x->x_obj, &s_float);
-  post(aubiozcr_version);
   return (void *)x;
 }
 

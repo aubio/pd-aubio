@@ -65,6 +65,7 @@ static void aubiotempo_tilde_dsp(t_aubiotempo_tilde *x, t_signal **sp)
 
 static void aubiotempo_tilde_debug(t_aubiotempo_tilde *x)
 {
+  post(aubiotempo_version);
   post("aubiotempo~ bufsize:\t%d", x->bufsize);
   post("aubiotempo~ hopsize:\t%d", x->hopsize);
   post("aubiotempo~ threshold:\t%f", x->threshold);
@@ -92,7 +93,6 @@ static void *aubiotempo_tilde_new (t_floatarg f)
   floatinlet_new (&x->x_obj, &x->threshold);
   x->tempobang = outlet_new (&x->x_obj, &s_bang);
   x->onsetbang = outlet_new (&x->x_obj, &s_bang);
-  post(aubiotempo_version);
   return (void *)x;
 }
 

@@ -74,6 +74,7 @@ static void aubioquiet_tilde_dsp(t_aubioquiet_tilde *x, t_signal **sp)
 
 static void aubioquiet_tilde_debug(t_aubioquiet_tilde *x)
 {
+	post(aubioquiet_version);
 	post("aubioquiet~ bufsize:\t%d", x->bufsize);
 	post("aubioquiet~ hopsize:\t%d", x->hopsize);
 	post("aubioquiet~ threshold:\t%f", x->threshold);
@@ -95,7 +96,6 @@ static void *aubioquiet_tilde_new (t_floatarg f)
   	floatinlet_new (&x->x_obj, &x->threshold);
 	x->quietbang = outlet_new (&x->x_obj, &s_bang);
 	x->noisybang = outlet_new (&x->x_obj, &s_bang);
-	post(aubioquiet_version);
 	return (void *)x;
 }
 

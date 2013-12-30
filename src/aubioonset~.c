@@ -63,6 +63,7 @@ aubioonset_tilde_dsp (t_aubioonset_tilde * x, t_signal ** sp)
 static void
 aubioonset_tilde_debug (t_aubioonset_tilde * x)
 {
+  post (aubioonset_version);
   post ("aubioonset~ bufsize:\t%d", x->bufsize);
   post ("aubioonset~ hopsize:\t%d", x->hopsize);
   post ("aubioonset~ threshold:\t%f", x->threshold);
@@ -87,7 +88,6 @@ aubioonset_tilde_new (t_floatarg f)
 
   floatinlet_new (&x->x_obj, &x->threshold);
   x->onsetbang = outlet_new (&x->x_obj, &s_bang);
-  post (aubioonset_version);
   return (void *) x;
 }
 

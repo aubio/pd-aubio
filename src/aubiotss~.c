@@ -76,6 +76,7 @@ static void aubiotss_tilde_dsp(t_aubiotss_tilde *x, t_signal **sp)
 
 static void aubiotss_tilde_debug(t_aubiotss_tilde *x)
 {
+  post(aubiotss_version);
   post("aubiotss~ bufsize:\t%d", x->bufsize);
   post("aubiotss~ hopsize:\t%d", x->hopsize);
   post("aubiotss~ threshold:\t%f", x->thres);
@@ -111,7 +112,6 @@ static void *aubiotss_tilde_new (t_floatarg f)
     floatinlet_new (&x->x_obj, &x->thres);
   outlet_new(&x->x_obj, gensym("signal"));
   outlet_new(&x->x_obj, gensym("signal"));
-  post(aubiotss_version);
   return (void *)x;
 }
 

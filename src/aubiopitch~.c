@@ -60,6 +60,7 @@ static void aubiopitch_tilde_dsp(t_aubiopitch_tilde *x, t_signal **sp)
 
 static void aubiopitch_tilde_debug(t_aubiopitch_tilde *x)
 {
+  post(aubiopitch_version);
   post("aubiopitch~ bufsize:\t%d", x->bufsize);
   post("aubiopitch~ hopsize:\t%d", x->hopsize);
   post("aubiopitch~ threshold:\t%f", x->threshold);
@@ -84,7 +85,6 @@ static void *aubiopitch_tilde_new (t_symbol * s)
   //floatinlet_new (&x->x_obj, &x->threshold);
   x->pitch = outlet_new (&x->x_obj, &s_float);
 
-  post(aubiopitch_version);
   return (void *)x;
 }
 
