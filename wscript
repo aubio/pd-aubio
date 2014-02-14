@@ -36,7 +36,11 @@ def configure(ctx):
         ctx.env.CFLAGS_cshlib = []
         ctx.env.LINKFLAGS_cshlib +=  ['-export_dynamic', '-lpd']
     else:
-        ctx.fatal("Sorry, i don't know how to build for %s yet" % ctx.env['DEST_OS'])
+        ctx.start_msg("Checking for platform")
+        ctx.end_msg("no idea how to build for %s yet, assuming linux"
+                % ctx.env['DEST_OS'], 'YELLOW')
+        ctx.env.cshlib_PATTERN = '%s.pd_linux'
+        ctx.env.LINKFLAGS_cshlib += ['--export_dynamic']
 
     # check for puredata header
     ctx.check(header_name='m_pd.h')
