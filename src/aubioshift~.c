@@ -64,10 +64,12 @@ static void aubioshift_tilde_debug(t_aubioshift_tilde *x)
       x->hopsize, 1000.*latency/(float)sys_getsr(), latency, x->transpose);
 }
 
-static void *aubioshift_tilde_new (t_floatarg f)
+static void *aubioshift_tilde_new (t_floatarg f, t_symbol *s)
 {
   t_aubioshift_tilde *x =
     (t_aubioshift_tilde *)pd_new(aubioshift_tilde_class);
+
+  if (strcmp(s->s_name, "") == 0) s->s_name = "default";
 
   x->transpose = (f < -23.9999) ? -23.9999 : (f > 24.) ? 24. : f;
   x->hopsize = sys_getblksize();
@@ -75,8 +77,9 @@ static void *aubioshift_tilde_new (t_floatarg f)
   x->input = (fvec_t *)new_fvec(x->hopsize);
   x->output = (fvec_t *)new_fvec(x->hopsize);
 
-  x->pitchshift = (aubio_pitchshift_t *)new_aubio_pitchshift("default", 1.,
+  x->pitchshift = (aubio_pitchshift_t *)new_aubio_pitchshift(s->s_name, 1.,
       x->hopsize, (uint_t)sys_getsr());
+  if (x->pitchshift == NULL) return NULL;
   aubio_pitchshift_set_transpose(x->pitchshift, x->transpose);
 
   floatinlet_new (&x->x_obj, &x->transpose);
@@ -89,7 +92,7 @@ void aubioshift_tilde_setup (void)
   aubioshift_tilde_class = class_new (gensym ("aubioshift~"),
       (t_newmethod)aubioshift_tilde_new,
       0, sizeof (t_aubioshift_tilde),
-      CLASS_DEFAULT, A_DEFFLOAT, 0);
+      CLASS_DEFAULT, A_DEFFLOAT, A_DEFSYMBOL, 0);
   class_addmethod(aubioshift_tilde_class,
       (t_method)aubioshift_tilde_dsp,
       gensym("dsp"), 0);
