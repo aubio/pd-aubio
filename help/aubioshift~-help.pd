@@ -1,0 +1,52 @@
+#N canvas 573 324 792 288 10;
+#X obj 39 119 adc~;
+#X obj 38 226 dac~;
+#X obj 134 31 nbx 5 14 -1e+37 1e+37 0 0 empty empty empty 0 -8 0 10
+-262144 -1 -1 0 256;
+#X obj 569 166 snapshot~;
+#X obj 652 115 tgl 15 0 empty empty empty 17 7 0 10 -262144 -1 -1 0
+1;
+#X obj 652 140 metro 10;
+#X obj 568 115 osc~ 0.05;
+#X obj 569 195 * 25;
+#X obj 569 226 s t;
+#X msg 331 130 -12;
+#X msg 208 119 4;
+#X msg 244 133 7;
+#X msg 283 148 12;
+#X obj 257 225 s t;
+#X obj 153 154 r t;
+#X text 677 114 start;
+#X text 569 85 can be constantly changing;
+#X text 205 86 some common values;
+#X msg 437 179 0.2;
+#X msg 420 145 22;
+#X obj 420 220 s t;
+#X text 414 85 or less common;
+#X text 204 19 The transposition value is expressed in semitones as
+a float in the range [-24 24]. It can be specified as aubioshift~ first
+argument or at its right inlet.;
+#X msg 86 138 debug;
+#X obj 39 171 aubioshift~ -4;
+#X msg 482 198 -0.3;
+#X msg 312 188 -4;
+#X connect 0 0 24 0;
+#X connect 0 1 24 0;
+#X connect 2 0 24 1;
+#X connect 3 0 7 0;
+#X connect 4 0 5 0;
+#X connect 5 0 3 0;
+#X connect 6 0 3 0;
+#X connect 7 0 8 0;
+#X connect 9 0 13 0;
+#X connect 10 0 13 0;
+#X connect 11 0 13 0;
+#X connect 12 0 13 0;
+#X connect 14 0 24 1;
+#X connect 18 0 20 0;
+#X connect 19 0 20 0;
+#X connect 23 0 24 0;
+#X connect 24 0 1 0;
+#X connect 24 0 1 1;
+#X connect 25 0 20 0;
+#X connect 26 0 13 0;
