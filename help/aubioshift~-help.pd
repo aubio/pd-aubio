@@ -1,4 +1,4 @@
-#N canvas 573 324 792 288 10;
+#N canvas 561 390 792 351 10;
 #X obj 39 119 adc~;
 #X obj 38 226 dac~;
 #X obj 134 31 nbx 5 14 -1e+37 1e+37 0 0 empty empty empty 0 -8 0 10
@@ -27,12 +27,16 @@
 a float in the range [-24 24]. It can be specified as aubioshift~ first
 argument or at its right inlet.;
 #X msg 86 138 debug;
-#X obj 39 171 aubioshift~ -4;
 #X msg 482 198 -0.3;
 #X msg 312 188 -4;
-#X connect 0 0 24 0;
-#X connect 0 1 24 0;
-#X connect 2 0 24 1;
+#X obj 39 171 aubioshift~ -4;
+#X text 378 277 Rubberband crispness can be set as an optional second
+creation argument. No 2nd argument is equivalent to "default" \, or
+"crispness:4".;
+#X obj 177 282 aubioshift~ -2 crispness:6;
+#X connect 0 0 26 0;
+#X connect 0 1 26 0;
+#X connect 2 0 26 1;
 #X connect 3 0 7 0;
 #X connect 4 0 5 0;
 #X connect 5 0 3 0;
@@ -42,11 +46,11 @@ argument or at its right inlet.;
 #X connect 10 0 13 0;
 #X connect 11 0 13 0;
 #X connect 12 0 13 0;
-#X connect 14 0 24 1;
+#X connect 14 0 26 1;
 #X connect 18 0 20 0;
 #X connect 19 0 20 0;
-#X connect 23 0 24 0;
-#X connect 24 0 1 0;
-#X connect 24 0 1 1;
-#X connect 25 0 20 0;
-#X connect 26 0 13 0;
+#X connect 23 0 26 0;
+#X connect 24 0 20 0;
+#X connect 25 0 13 0;
+#X connect 26 0 1 0;
+#X connect 26 0 1 1;
