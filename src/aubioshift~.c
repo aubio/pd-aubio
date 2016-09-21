@@ -77,8 +77,8 @@ static void *aubioshift_tilde_new (t_floatarg f, t_symbol *s)
   x->input = (fvec_t *)new_fvec(x->hopsize);
   x->output = (fvec_t *)new_fvec(x->hopsize);
 
-  x->pitchshift = (aubio_pitchshift_t *)new_aubio_pitchshift(s->s_name, 1.,
-      x->hopsize, (uint_t)sys_getsr());
+  x->pitchshift = (aubio_pitchshift_t *)new_aubio_pitchshift(s->s_name,
+      x->transpose, x->hopsize, (uint_t)sys_getsr());
   if (x->pitchshift == NULL) return NULL;
   aubio_pitchshift_set_transpose(x->pitchshift, x->transpose);
 
