@@ -1,8 +1,8 @@
-#N canvas 561 390 792 351 10;
+#N canvas 559 401 792 351 10;
 #X obj 39 119 adc~;
 #X obj 38 226 dac~;
 #X obj 134 31 nbx 5 14 -1e+37 1e+37 0 0 empty empty empty 0 -8 0 10
--262144 -1 -1 0 256;
+-262144 -1 -1 4 256;
 #X obj 569 166 snapshot~;
 #X obj 652 115 tgl 15 0 empty empty empty 17 7 0 10 -262144 -1 -1 0
 1;
@@ -33,7 +33,7 @@ argument or at its right inlet.;
 #X text 378 277 Rubberband crispness can be set as an optional second
 creation argument. No 2nd argument is equivalent to "default" \, or
 "crispness:4".;
-#X obj 177 282 aubioshift~ -2 crispness:6;
+#X obj 177 282 aubioshift~ -2 crispness:2;
 #X connect 0 0 26 0;
 #X connect 0 1 26 0;
 #X connect 2 0 26 1;
