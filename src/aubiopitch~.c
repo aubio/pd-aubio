@@ -21,7 +21,6 @@ typedef struct _aubiopitch_tilde
 {
   t_object x_obj;
   t_float threshold;
-  t_float threshold2;
   t_int pos; /*frames%dspblocksize*/
   t_int bufsize;
   t_int hopsize;
@@ -88,12 +87,12 @@ static void *aubiopitch_tilde_new (t_symbol * s)
   return (void *)x;
 }
 
-static void *aubiopitch_tilde_del(t_aubiopitch_tilde *x)
+void aubiopitch_tilde_del(t_aubiopitch_tilde *x)
 {
+  outlet_free(x->pitch);
   del_aubio_pitch(x->o);
   del_fvec(x->vec);
   del_fvec(x->pitchvec);
-  return 0;
 }
 
 void aubiopitch_tilde_setup (void)
