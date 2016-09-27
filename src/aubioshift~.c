@@ -23,6 +23,8 @@ typedef struct _aubioshift_tilde
   aubio_pitchshift_t * pitchshift;
   fvec_t *input;
   fvec_t *output;
+  t_inlet *inlet;
+  t_outlet *outlet;
 } t_aubioshift_tilde;
 
 static t_int *aubioshift_tilde_perform(t_int *w)
@@ -82,16 +84,27 @@ static void *aubioshift_tilde_new (t_floatarg f, t_symbol *s)
   if (x->pitchshift == NULL) return NULL;
   aubio_pitchshift_set_transpose(x->pitchshift, x->transpose);
 
-  floatinlet_new (&x->x_obj, &x->transpose);
-  outlet_new(&x->x_obj, gensym("signal"));
+  x->inlet = floatinlet_new (&x->x_obj, &x->transpose);
+  x->outlet = outlet_new(&x->x_obj, gensym("signal"));
   return (void *)x;
+}
+
+void aubioshift_tilde_del(t_aubioshift_tilde *x)
+{
+  post("aubioshift_tilde_del");
+  inlet_free(x->inlet);
+  outlet_free(x->outlet);
+  del_aubio_pitchshift(x->pitchshift);
+  del_fvec(x->input);
+  del_fvec(x->output);
 }
 
 void aubioshift_tilde_setup (void)
 {
   aubioshift_tilde_class = class_new (gensym ("aubioshift~"),
       (t_newmethod)aubioshift_tilde_new,
-      0, sizeof (t_aubioshift_tilde),
+      (t_method)aubioshift_tilde_del,
+      sizeof (t_aubioshift_tilde),
       CLASS_DEFAULT, A_DEFFLOAT, A_DEFSYMBOL, 0);
   class_addmethod(aubioshift_tilde_class,
       (t_method)aubioshift_tilde_dsp,
