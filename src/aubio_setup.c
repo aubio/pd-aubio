@@ -1,5 +1,7 @@
 
 #include <m_pd.h>
+#include <aubio/aubio.h>
+#include <string.h>
 
 char aubio_version[] = "aubio external for pd, version " PACKAGE_VERSION;
 
@@ -26,9 +28,22 @@ void *aubio_new (void)
   return (void *)x;
 }
 
+void aubio_custom_log(int level, const char *message, void *data)
+{
+  // remove the last character, removing the trailing space
+  char *pos;
+  if ((pos=strchr(message, '\n')) != NULL) {
+        *pos = '\0';
+  }
+  post(message);
+}
+
 void aubio_setup (void)
 {
   post(aubio_version);
+  // register custom log function for errors and warnings
+  aubio_log_set_level_function(AUBIO_LOG_ERR, aubio_custom_log, NULL);
+  aubio_log_set_level_function(AUBIO_LOG_WRN, aubio_custom_log, NULL);
   aubioonset_tilde_setup();
   aubiotempo_tilde_setup();
   aubiotss_tilde_setup();

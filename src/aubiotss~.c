@@ -24,6 +24,9 @@ typedef struct _aubiotss_tilde
   t_int pos; /*frames%dspblocksize*/
   t_int bufsize;
   t_int hopsize;
+  t_inlet *inlet;
+  t_outlet *outlet_trans;
+  t_outlet *outlet_stead;
   aubio_pvoc_t * pv;
   aubio_pvoc_t * pvt;
   aubio_pvoc_t * pvs;
@@ -109,17 +112,30 @@ static void *aubiotss_tilde_new (t_floatarg f)
 
   x->tss = (aubio_tss_t *)new_aubio_tss(x->bufsize, x->hopsize);
 
-    floatinlet_new (&x->x_obj, &x->thres);
-  outlet_new(&x->x_obj, gensym("signal"));
-  outlet_new(&x->x_obj, gensym("signal"));
+  x->inlet = floatinlet_new (&x->x_obj, &x->thres);
+  x->outlet_trans = outlet_new(&x->x_obj, gensym("signal"));
+  x->outlet_stead = outlet_new(&x->x_obj, gensym("signal"));
   return (void *)x;
+}
+
+void
+aubiotss_tilde_del (t_aubiotss_tilde *x)
+{
+  inlet_free(x->inlet);
+  outlet_free(x->outlet_trans);
+  outlet_free(x->outlet_stead);
+  del_aubio_pvoc(x->pv);
+  del_aubio_pvoc(x->pvt);
+  del_aubio_pvoc(x->pvs);
+  del_aubio_tss(x->tss);
 }
 
 void aubiotss_tilde_setup (void)
 {
   aubiotss_tilde_class = class_new (gensym ("aubiotss~"),
       (t_newmethod)aubiotss_tilde_new,
-      0, sizeof (t_aubiotss_tilde),
+      (t_method)aubiotss_tilde_del,
+      sizeof (t_aubiotss_tilde),
       CLASS_DEFAULT, A_DEFFLOAT, 0);
   class_addmethod(aubiotss_tilde_class,
       (t_method)aubiotss_tilde_dsp,

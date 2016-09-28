@@ -20,11 +20,11 @@ void aubiopitch_tilde_setup (void);
 typedef struct _aubiopitch_tilde
 {
   t_object x_obj;
-  t_float threshold;
-  t_float threshold2;
+  t_float tolerance;
   t_int pos; /*frames%dspblocksize*/
   t_int bufsize;
   t_int hopsize;
+  char_t *method;
   aubio_pitch_t *o;
   fvec_t *vec;
   fvec_t *pitchvec;
@@ -58,42 +58,74 @@ static void aubiopitch_tilde_dsp(t_aubiopitch_tilde *x, t_signal **sp)
   dsp_add(aubiopitch_tilde_perform, 3, x, sp[0]->s_vec, sp[0]->s_n);
 }
 
+static void aubiopitch_tilde_tolerance(t_aubiopitch_tilde *x, t_floatarg a)
+{
+  if (a > 0) {
+    x->tolerance = a;
+    aubio_pitch_set_tolerance(x->o, x->tolerance);
+  } else {
+    post("aubiopitch~ tolerance set to %.2f",
+        aubio_pitch_get_tolerance(x->o));
+  }
+}
+
 static void aubiopitch_tilde_debug(t_aubiopitch_tilde *x)
 {
   post(aubiopitch_version);
+  post("aubiopitch~ method:\t%s", x->method);
   post("aubiopitch~ bufsize:\t%d", x->bufsize);
   post("aubiopitch~ hopsize:\t%d", x->hopsize);
-  post("aubiopitch~ threshold:\t%f", x->threshold);
-  post("aubiopitch~ audio in:\t%f", x->vec->data[0]);
+  post("aubiopitch~ tolerance:\t%f", aubio_pitch_get_tolerance(x->o));
 }
 
-//static void *aubiopitch_tilde_new (t_floatarg f)
-static void *aubiopitch_tilde_new (t_symbol * s)
+static void *aubiopitch_tilde_new (t_symbol * s, int argc, t_atom *argv)
 {
-  t_aubiopitch_tilde *x =
-    (t_aubiopitch_tilde *)pd_new(aubiopitch_tilde_class);
 
+  t_aubiopitch_tilde *x = (t_aubiopitch_tilde *)pd_new(aubiopitch_tilde_class);
+
+  x->method = "default";
   x->bufsize = 2048;
   x->hopsize = x->bufsize / 2;
 
-  x->o = new_aubio_pitch(s->s_name, x->bufsize,
-      x->hopsize, (uint_t)sys_getsr() );
-  aubio_pitch_set_tolerance (x->o, 0.7);
+  if (argc >= 2) {
+    if (argv[1].a_type == A_FLOAT) {
+      x->bufsize = (uint_t)(argv[1].a_w.w_float);
+    }
+    argc--;
+  }
+
+  x->hopsize = x->bufsize / 2;
+
+  if (argc == 2) {
+    if (argv[2].a_type == A_FLOAT) {
+      x->hopsize = (uint_t)(argv[2].a_w.w_float);
+    }
+    argc--;
+  }
+
+  if (argc == 1) {
+    x->method = argv[0].a_w.w_symbol->s_name;
+  }
+
+  x->o = new_aubio_pitch(x->method, x->bufsize, x->hopsize,
+      (uint_t)sys_getsr());
+
+  if (x->o == NULL) return NULL;
+
   x->vec = (fvec_t *)new_fvec(x->hopsize);
   x->pitchvec = (fvec_t *)new_fvec(1);
 
-  //floatinlet_new (&x->x_obj, &x->threshold);
   x->pitch = outlet_new (&x->x_obj, &s_float);
 
   return (void *)x;
 }
 
-static void *aubiopitch_tilde_del(t_aubiopitch_tilde *x)
+void aubiopitch_tilde_del(t_aubiopitch_tilde *x)
 {
+  outlet_free(x->pitch);
   del_aubio_pitch(x->o);
   del_fvec(x->vec);
   del_fvec(x->pitchvec);
-  return 0;
 }
 
 void aubiopitch_tilde_setup (void)
@@ -102,13 +134,19 @@ void aubiopitch_tilde_setup (void)
       (t_newmethod)aubiopitch_tilde_new,
       (t_method)aubiopitch_tilde_del,
       sizeof (t_aubiopitch_tilde),
-      CLASS_DEFAULT, A_DEFSYMBOL, 0);
+      CLASS_DEFAULT, A_GIMME, 0);
   class_addmethod(aubiopitch_tilde_class,
       (t_method)aubiopitch_tilde_dsp,
       gensym("dsp"), 0);
   class_addmethod(aubiopitch_tilde_class,
+      (t_method)aubiopitch_tilde_tolerance,
+      gensym("tolerance"), A_DEFFLOAT, 0);
+  class_addmethod(aubiopitch_tilde_class,
+      (t_method)aubiopitch_tilde_tolerance,
+      gensym("tol"), A_DEFFLOAT, 0);
+  class_addmethod(aubiopitch_tilde_class,
       (t_method)aubiopitch_tilde_debug,
       gensym("debug"), 0);
   CLASS_MAINSIGNALIN(aubiopitch_tilde_class,
-      t_aubiopitch_tilde, threshold);
+      t_aubiopitch_tilde, tolerance);
 }
