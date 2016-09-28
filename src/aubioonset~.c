@@ -118,6 +118,7 @@ aubioonset_tilde_new (t_symbol *s, int argc, t_atom *argv)
   if (x->threshold != -1) {
     aubio_onset_set_threshold(x->o, x->threshold);
   }
+  x->threshold = aubio_onset_get_threshold(x->o);
 
   x->in = (fvec_t *) new_fvec (x->hopsize);
   x->out = (fvec_t *) new_fvec (1);
