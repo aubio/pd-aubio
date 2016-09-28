@@ -66,9 +66,10 @@ static void
 aubioonset_tilde_debug (t_aubioonset_tilde * x)
 {
   post (aubioonset_version);
+  post ("aubioonset~ method:\t%s", x->method);
+  post ("aubioonset~ threshold:\t%f", x->threshold);
   post ("aubioonset~ bufsize:\t%d", x->bufsize);
   post ("aubioonset~ hopsize:\t%d", x->hopsize);
-  post ("aubioonset~ threshold:\t%f", x->threshold);
 }
 
 static void *
@@ -80,7 +81,7 @@ aubioonset_tilde_new (t_symbol *s, int argc, t_atom *argv)
   x->bufsize = 1024;
   x->method = "default";
 
-  if (argc == 3) {
+  if (argc >= 3) {
     if (argv[2].a_type == A_FLOAT) {
       x->bufsize = (uint_t)(argv[2].a_w.w_float);
     }
@@ -89,7 +90,7 @@ aubioonset_tilde_new (t_symbol *s, int argc, t_atom *argv)
 
   x->hopsize = x->bufsize / 2;
 
-  if (argc == 4) {
+  if (argc == 3) {
     if (argv[3].a_type == A_FLOAT) {
       x->hopsize = (uint_t)(argv[3].a_w.w_float);
     }
