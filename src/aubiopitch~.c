@@ -24,6 +24,7 @@ typedef struct _aubiopitch_tilde
   t_int pos; /*frames%dspblocksize*/
   t_int bufsize;
   t_int hopsize;
+  char_t *method;
   aubio_pitch_t *o;
   fvec_t *vec;
   fvec_t *pitchvec;
@@ -75,9 +76,17 @@ static void *aubiopitch_tilde_new (t_symbol * s)
   x->bufsize = 2048;
   x->hopsize = x->bufsize / 2;
 
-  x->o = new_aubio_pitch(s->s_name, x->bufsize,
-      x->hopsize, (uint_t)sys_getsr() );
-  aubio_pitch_set_tolerance (x->o, 0.7);
+  if (!*s->s_name) {
+    x->method = "default";
+  } else {
+    x->method = s->s_name;
+  }
+
+  x->o = new_aubio_pitch(x->method, x->bufsize, x->hopsize,
+      (uint_t)sys_getsr());
+
+  if (x->o == NULL) return NULL;
+
   x->vec = (fvec_t *)new_fvec(x->hopsize);
   x->pitchvec = (fvec_t *)new_fvec(1);
 
