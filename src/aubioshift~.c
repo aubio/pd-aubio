@@ -91,7 +91,6 @@ static void *aubioshift_tilde_new (t_floatarg f, t_symbol *s)
 
 void aubioshift_tilde_del(t_aubioshift_tilde *x)
 {
-  post("aubioshift_tilde_del");
   inlet_free(x->inlet);
   outlet_free(x->outlet);
   del_aubio_pitchshift(x->pitchshift);
