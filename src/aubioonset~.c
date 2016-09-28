@@ -20,6 +20,7 @@ typedef struct _aubioonset_tilde
 {
   t_object x_obj;
   t_float threshold;
+  char_t *method;
   t_int pos;                    /*frames%dspblocksize */
   t_int bufsize;
   t_int hopsize;
@@ -71,18 +72,51 @@ aubioonset_tilde_debug (t_aubioonset_tilde * x)
 }
 
 static void *
-aubioonset_tilde_new (t_floatarg f)
+aubioonset_tilde_new (t_symbol *s, int argc, t_atom *argv)
 {
   t_aubioonset_tilde *x = (t_aubioonset_tilde *)pd_new(aubioonset_tilde_class);
 
-  x->threshold = (f < 1e-5) ? 0.1 : (f > 10.) ? 10. : f;
+  x->threshold = -1;
   x->bufsize = 1024;
+  x->method = "default";
+
+  if (argc == 3) {
+    if (argv[2].a_type == A_FLOAT) {
+      x->bufsize = (uint_t)(argv[2].a_w.w_float);
+    }
+    argc--;
+  }
+
   x->hopsize = x->bufsize / 2;
 
-  x->o = new_aubio_onset ("default",
+  if (argc == 4) {
+    if (argv[3].a_type == A_FLOAT) {
+      x->hopsize = (uint_t)(argv[3].a_w.w_float);
+    }
+    argc--;
+  }
+
+  // process 2 remaining arguments
+  // (can be 'method threshold' or 'threshold method')
+  while (argc > 0) {
+    if (argv->a_type == A_FLOAT) {
+      t_sample f = argv->a_w.w_float;
+      x->threshold = (f < 1e-5) ? 0.1 : (f > 10.) ? 10. : f;
+    } else if (argv->a_type == A_SYMBOL) {
+      x->method = argv->a_w.w_symbol->s_name;
+    }
+    argc--;
+    argv++;
+  }
+
+  x->o = new_aubio_onset (x->method,
       x->bufsize, x->hopsize, (uint_t) sys_getsr ());
 
   if (x->o == NULL) return NULL;
+
+  if (x->threshold != -1) {
+    aubio_onset_set_threshold(x->o, x->threshold);
+  }
 
   x->in = (fvec_t *) new_fvec (x->hopsize);
   x->out = (fvec_t *) new_fvec (1);
@@ -92,7 +126,7 @@ aubioonset_tilde_new (t_floatarg f)
   return (void *) x;
 }
 
-static void
+void
 aubioonset_tilde_del (t_aubioonset_tilde *x)
 {
   inlet_free(x->inlet);
@@ -108,7 +142,7 @@ aubioonset_tilde_setup (void)
   aubioonset_tilde_class = class_new (gensym ("aubioonset~"),
       (t_newmethod) aubioonset_tilde_new,
       (t_method) aubioonset_tilde_del,
-      sizeof (t_aubioonset_tilde), CLASS_DEFAULT, A_DEFFLOAT, 0);
+      sizeof (t_aubioonset_tilde), CLASS_DEFAULT, A_GIMME, 0);
   class_addmethod (aubioonset_tilde_class,
       (t_method) aubioonset_tilde_dsp, gensym ("dsp"), 0);
   class_addmethod (aubioonset_tilde_class,
