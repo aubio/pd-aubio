@@ -26,6 +26,7 @@ typedef struct _aubioonset_tilde
   aubio_onset_t *o;
   fvec_t *in;
   fvec_t *out;
+  t_inlet *inlet;
   t_outlet *onsetbang;
 } t_aubioonset_tilde;
 
@@ -67,28 +68,38 @@ aubioonset_tilde_debug (t_aubioonset_tilde * x)
   post ("aubioonset~ bufsize:\t%d", x->bufsize);
   post ("aubioonset~ hopsize:\t%d", x->hopsize);
   post ("aubioonset~ threshold:\t%f", x->threshold);
-  post ("aubioonset~ audio in:\t%f", x->in->data[0]);
-  post ("aubioonset~ onset:\t%f", x->out->data[0]);
 }
 
 static void *
 aubioonset_tilde_new (t_floatarg f)
 {
-  t_aubioonset_tilde *x =
-      (t_aubioonset_tilde *) pd_new (aubioonset_tilde_class);
+  t_aubioonset_tilde *x = (t_aubioonset_tilde *)pd_new(aubioonset_tilde_class);
 
   x->threshold = (f < 1e-5) ? 0.1 : (f > 10.) ? 10. : f;
   x->bufsize = 1024;
   x->hopsize = x->bufsize / 2;
 
-  x->o = new_aubio_onset ("complex",
+  x->o = new_aubio_onset ("default",
       x->bufsize, x->hopsize, (uint_t) sys_getsr ());
+
+  if (x->o == NULL) return NULL;
+
   x->in = (fvec_t *) new_fvec (x->hopsize);
   x->out = (fvec_t *) new_fvec (1);
 
-  floatinlet_new (&x->x_obj, &x->threshold);
+  x->inlet = floatinlet_new (&x->x_obj, &x->threshold);
   x->onsetbang = outlet_new (&x->x_obj, &s_bang);
   return (void *) x;
+}
+
+static void
+aubioonset_tilde_del (t_aubioonset_tilde *x)
+{
+  inlet_free(x->inlet);
+  outlet_free(x->onsetbang);
+  del_aubio_onset(x->o);
+  del_fvec(x->in);
+  del_fvec(x->out);
 }
 
 void
@@ -96,7 +107,8 @@ aubioonset_tilde_setup (void)
 {
   aubioonset_tilde_class = class_new (gensym ("aubioonset~"),
       (t_newmethod) aubioonset_tilde_new,
-      0, sizeof (t_aubioonset_tilde), CLASS_DEFAULT, A_DEFFLOAT, 0);
+      (t_method) aubioonset_tilde_del,
+      sizeof (t_aubioonset_tilde), CLASS_DEFAULT, A_DEFFLOAT, 0);
   class_addmethod (aubioonset_tilde_class,
       (t_method) aubioonset_tilde_dsp, gensym ("dsp"), 0);
   class_addmethod (aubioonset_tilde_class,
