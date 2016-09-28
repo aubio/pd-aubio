@@ -72,25 +72,39 @@ static void aubiopitch_tilde_tolerance(t_aubiopitch_tilde *x, t_floatarg a)
 static void aubiopitch_tilde_debug(t_aubiopitch_tilde *x)
 {
   post(aubiopitch_version);
+  post("aubiopitch~ method:\t%s", x->method);
   post("aubiopitch~ bufsize:\t%d", x->bufsize);
   post("aubiopitch~ hopsize:\t%d", x->hopsize);
   post("aubiopitch~ tolerance:\t%f", aubio_pitch_get_tolerance(x->o));
-  post("aubiopitch~ audio in:\t%f", x->vec->data[0]);
 }
 
-//static void *aubiopitch_tilde_new (t_floatarg f)
-static void *aubiopitch_tilde_new (t_symbol * s)
+static void *aubiopitch_tilde_new (t_symbol * s, int argc, t_atom *argv)
 {
-  t_aubiopitch_tilde *x =
-    (t_aubiopitch_tilde *)pd_new(aubiopitch_tilde_class);
 
+  t_aubiopitch_tilde *x = (t_aubiopitch_tilde *)pd_new(aubiopitch_tilde_class);
+
+  x->method = "default";
   x->bufsize = 2048;
   x->hopsize = x->bufsize / 2;
 
-  if (!*s->s_name) {
-    x->method = "default";
-  } else {
-    x->method = s->s_name;
+  if (argc >= 2) {
+    if (argv[1].a_type == A_FLOAT) {
+      x->bufsize = (uint_t)(argv[1].a_w.w_float);
+    }
+    argc--;
+  }
+
+  x->hopsize = x->bufsize / 2;
+
+  if (argc == 2) {
+    if (argv[2].a_type == A_FLOAT) {
+      x->hopsize = (uint_t)(argv[2].a_w.w_float);
+    }
+    argc--;
+  }
+
+  if (argc == 1) {
+    x->method = argv[0].a_w.w_symbol->s_name;
   }
 
   x->o = new_aubio_pitch(x->method, x->bufsize, x->hopsize,
@@ -120,7 +134,7 @@ void aubiopitch_tilde_setup (void)
       (t_newmethod)aubiopitch_tilde_new,
       (t_method)aubiopitch_tilde_del,
       sizeof (t_aubiopitch_tilde),
-      CLASS_DEFAULT, A_DEFSYMBOL, 0);
+      CLASS_DEFAULT, A_GIMME, 0);
   class_addmethod(aubiopitch_tilde_class,
       (t_method)aubiopitch_tilde_dsp,
       gensym("dsp"), 0);
