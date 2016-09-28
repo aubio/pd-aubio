@@ -20,7 +20,7 @@ void aubiopitch_tilde_setup (void);
 typedef struct _aubiopitch_tilde
 {
   t_object x_obj;
-  t_float threshold;
+  t_float tolerance;
   t_int pos; /*frames%dspblocksize*/
   t_int bufsize;
   t_int hopsize;
@@ -58,12 +58,23 @@ static void aubiopitch_tilde_dsp(t_aubiopitch_tilde *x, t_signal **sp)
   dsp_add(aubiopitch_tilde_perform, 3, x, sp[0]->s_vec, sp[0]->s_n);
 }
 
+static void aubiopitch_tilde_tolerance(t_aubiopitch_tilde *x, t_floatarg a)
+{
+  if (a > 0) {
+    x->tolerance = a;
+    aubio_pitch_set_tolerance(x->o, x->tolerance);
+  } else {
+    post("aubiopitch~ tolerance set to %.2f",
+        aubio_pitch_get_tolerance(x->o));
+  }
+}
+
 static void aubiopitch_tilde_debug(t_aubiopitch_tilde *x)
 {
   post(aubiopitch_version);
   post("aubiopitch~ bufsize:\t%d", x->bufsize);
   post("aubiopitch~ hopsize:\t%d", x->hopsize);
-  post("aubiopitch~ threshold:\t%f", x->threshold);
+  post("aubiopitch~ tolerance:\t%f", aubio_pitch_get_tolerance(x->o));
   post("aubiopitch~ audio in:\t%f", x->vec->data[0]);
 }
 
@@ -90,7 +101,6 @@ static void *aubiopitch_tilde_new (t_symbol * s)
   x->vec = (fvec_t *)new_fvec(x->hopsize);
   x->pitchvec = (fvec_t *)new_fvec(1);
 
-  //floatinlet_new (&x->x_obj, &x->threshold);
   x->pitch = outlet_new (&x->x_obj, &s_float);
 
   return (void *)x;
@@ -115,8 +125,14 @@ void aubiopitch_tilde_setup (void)
       (t_method)aubiopitch_tilde_dsp,
       gensym("dsp"), 0);
   class_addmethod(aubiopitch_tilde_class,
+      (t_method)aubiopitch_tilde_tolerance,
+      gensym("tolerance"), A_DEFFLOAT, 0);
+  class_addmethod(aubiopitch_tilde_class,
+      (t_method)aubiopitch_tilde_tolerance,
+      gensym("tol"), A_DEFFLOAT, 0);
+  class_addmethod(aubiopitch_tilde_class,
       (t_method)aubiopitch_tilde_debug,
       gensym("debug"), 0);
   CLASS_MAINSIGNALIN(aubiopitch_tilde_class,
-      t_aubiopitch_tilde, threshold);
+      t_aubiopitch_tilde, tolerance);
 }
