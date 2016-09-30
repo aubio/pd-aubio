@@ -96,12 +96,12 @@ static void *aubiotempo_tilde_new (t_floatarg f)
   return (void *)x;
 }
 
-static void *aubiotempo_tilde_del(t_aubiotempo_tilde *x)
+static void
+aubiotempo_tilde_del(t_aubiotempo_tilde *x)
 {
-  if(x->t)      del_aubio_tempo(x->t);
-  if(x->output) del_fvec(x->output);
-  if(x->vec)    del_fvec(x->vec);
-  return 0;
+  del_aubio_tempo(x->t);
+  del_fvec(x->output);
+  del_fvec(x->vec);
 }
 
 void aubiotempo_tilde_setup (void)
