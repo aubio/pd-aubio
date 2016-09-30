@@ -123,7 +123,7 @@ static void *aubiopitch_tilde_new (t_symbol * s, int argc, t_atom *argv)
 void aubiopitch_tilde_del(t_aubiopitch_tilde *x)
 {
   outlet_free(x->pitch);
-  del_aubio_pitchshift(x->o);
+  del_aubio_pitch(x->o);
   del_fvec(x->vec);
   del_fvec(x->pitchvec);
 }
