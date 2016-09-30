@@ -71,11 +71,9 @@ static void aubiopitch_tilde_tolerance(t_aubiopitch_tilde *x, t_floatarg a)
 
 static void aubiopitch_tilde_debug(t_aubiopitch_tilde *x)
 {
-  post(aubiopitch_version);
-  post("aubiopitch~ method:\t%s", x->method);
-  post("aubiopitch~ bufsize:\t%d", x->bufsize);
-  post("aubiopitch~ hopsize:\t%d", x->hopsize);
-  post("aubiopitch~ tolerance:\t%f", aubio_pitch_get_tolerance(x->o));
+  smpl_t tolerance = aubio_pitch_get_tolerance(x->o);
+  post("%s method: %s tolerance: %.3f bufsize: %d hopsize: %d",
+      aubiopitch_version, x->method, tolerance, x->bufsize, x->hopsize);
 }
 
 static void *aubiopitch_tilde_new (t_symbol * s, int argc, t_atom *argv)
@@ -104,7 +102,12 @@ static void *aubiopitch_tilde_new (t_symbol * s, int argc, t_atom *argv)
   }
 
   if (argc == 1) {
-    x->method = argv[0].a_w.w_symbol->s_name;
+    if (argv[0].a_type == A_SYMBOL) {
+      x->method = argv[0].a_w.w_symbol->s_name;
+    } else {
+      post("aubiopitch~: first argument should be a symbol");
+      return NULL;
+    }
   }
 
   x->o = new_aubio_pitch(x->method, x->bufsize, x->hopsize,

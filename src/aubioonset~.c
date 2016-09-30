@@ -65,11 +65,8 @@ aubioonset_tilde_dsp (t_aubioonset_tilde * x, t_signal ** sp)
 static void
 aubioonset_tilde_debug (t_aubioonset_tilde * x)
 {
-  post (aubioonset_version);
-  post ("aubioonset~ method:\t%s", x->method);
-  post ("aubioonset~ threshold:\t%f", x->threshold);
-  post ("aubioonset~ bufsize:\t%d", x->bufsize);
-  post ("aubioonset~ hopsize:\t%d", x->hopsize);
+  post ("%s method: %s threshold: %.3f bufsize: %d hopsize: %d",
+      aubioonset_version, x->method, x->threshold, x->bufsize, x->hopsize);
 }
 
 static void *

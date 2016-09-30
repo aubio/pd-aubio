@@ -1,18 +1,60 @@
-#N canvas 254 165 450 425 10;
-#X floatatom 126 230 5 0 0 0 - - -;
-#X obj 125 168 osc~ 440;
-#X obj 128 111 hsl 128 15 0 127 0 0 empty empty empty -2 -6 0 8 -262144
--1 -1 8100 1;
-#X obj 125 131 mtof;
-#X floatatom 125 151 5 0 0 0 - - -;
-#X obj 141 200 aubiopitch~;
-#X obj 103 274 dac~;
-#X obj 126 250 osc~;
-#X connect 0 0 7 0;
+#N canvas 543 255 812 435 10;
+#X floatatom 141 194 5 0 0 0 - - -, f 5;
+#X obj 14 138 osc~ 440;
+#X obj 17 81 hsl 128 15 0 127 0 1 empty empty empty -2 -6 0 8 -262144
+-1 -1 5700 1;
+#X obj 14 101 mtof;
+#X floatatom 14 121 5 0 0 0 - - -, f 5;
+#X obj 13 244 dac~;
+#X obj 141 215 osc~;
+#X msg 211 76 tolerance 0.2;
+#X msg 211 100 tol 0.7;
+#X msg 211 123 tol;
+#X text 14 21 aubiopitch~ tracks the 'pitch' or fundamental frequency
+of the input signal.;
+#X msg 48 59 69;
+#X msg 82 59 72.1;
+#X text 185 193 detected pitch (Hz);
+#X text 59 119 test pitch (Hz);
+#X text 69 324 - bufsize: length of fft window [1024];
+#X text 69 344 - hopsize: block size of each analysis [bufsize/2];
+#X text 329 73 For yin and yinfft methods \, a 'tolerance' message
+can be sent to change the default tolerance value.;
+#X msg 557 233 debug;
+#X obj 141 170 aubiopitch~ fcomb 1024 128;
+#X text 483 256 Examples:;
+#X text 70 292 - method: can be 'yin' \, 'yinfft' \, 'mcomb' \, 'fcomb'
+\, 'schmitt' \, or 'default' [default];
+#X msg 14 59 57;
+#X obj 557 255 aubiopitch~ yinfft;
+#X obj 557 276 aubiopitch~ yin 1024;
+#X text 329 108 Values in the range [0. \, 1.] are expected. Higher
+values will avoid incorrect detections \, but also discard some correct
+ones.;
+#X obj 557 298 aubiopitch~ fcomb 256 32;
+#X text 65 387 If not specified \, hopsize will be set to half of bufsize.
+Otherwise it should be at most 'bufsize'.;
+#X obj 557 321 aubiopitch~ schmitt 64 64;
+#X obj 557 344 aubiopitch~ mcomb 4096 4000;
+#X text 65 366 All arguments are optional.;
+#X text 66 257 The creation arguments can be used to set the pitch
+detection parameters.;
+#X connect 0 0 6 0;
 #X connect 1 0 5 0;
-#X connect 1 0 6 0;
+#X connect 1 0 19 0;
 #X connect 2 0 3 0;
 #X connect 3 0 4 0;
 #X connect 4 0 1 0;
-#X connect 5 0 0 0;
-#X connect 7 0 6 1;
+#X connect 6 0 5 1;
+#X connect 7 0 19 0;
+#X connect 8 0 19 0;
+#X connect 9 0 19 0;
+#X connect 11 0 2 0;
+#X connect 12 0 2 0;
+#X connect 18 0 23 0;
+#X connect 18 0 24 0;
+#X connect 18 0 26 0;
+#X connect 18 0 28 0;
+#X connect 18 0 29 0;
+#X connect 19 0 0 0;
+#X connect 22 0 2 0;
