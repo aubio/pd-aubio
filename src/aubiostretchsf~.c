@@ -41,8 +41,11 @@ typedef struct _aubiostretchsf_tilde
   t_clock *clock_done;
   smpl_t stretch;
   smpl_t transpose;
+  //int opened;
   int playing;
   int ended;
+  int waited_opening;
+  int loop;
 } t_aubiostretchsf_tilde;
 
 static t_int *
@@ -52,26 +55,37 @@ aubiostretchsf_tilde_perform (t_int * w)
   t_sample *out  = (t_sample *)(w[2]);
   int s_n = (int)w[3];
   int read = 0;
-  if (x->playing) {
+  if (x->playing && !aubio_timestretch_get_opened(x->o)) {
+    x->waited_opening += s_n;
+  }
+  if (x->playing && aubio_timestretch_get_opened(x->o)) {
+    if (x->waited_opening) {
+      if (x->waited_opening > 0) {
+        post("aubiostretchsf~: start while opening, waited %.2fms\t(%d samples)",
+            1000. * x->waited_opening / (float)sys_getsr(), x->waited_opening);
+      }
+      x->waited_opening = 0;
+    }
     aubio_timestretch_set_stretch(x->o, x->stretch);
     aubio_timestretch_set_transpose(x->o, x->transpose);
     aubio_timestretch_do(x->o, x->out, &read);
     if (read > 0) {
       memcpy(out, x->out->data, read * sizeof(smpl_t));
     }
-    if (read > 0 && s_n > read) {
-      //post("feel-in  %d with zeros", sys_getblksize() - read);
-      memset(out + read, 0, (s_n - read) * sizeof(smpl_t));
-      //post("sending clock");
+    if (read < s_n) {
+      // eof was reached
+      if (read > 0) {
+        // the last buffer was uncomplete
+        memset(out + read, 0, (s_n - read) * sizeof(smpl_t));
+      }
+      // signal the end of the file
       clock_delay(x->clock_done, 0);
-      x->playing = 0;
-      x->ended = 1;
-    }
-    if (read <= 0) {
-      // occurs when the previous read was a short read of a complete buffer
-      clock_delay(x->clock_done, 0);
-      x->playing = 0;
-      x->ended = 1;
+      if (!x->loop) {
+        x->playing = 0;
+        x->ended = 1;
+      } else {
+        aubio_timestretch_seek(x->o, 0);
+      }
     }
   } else {
     memset(out, 0, s_n * sizeof(smpl_t));
@@ -100,8 +114,11 @@ aubiostretchsf_tilde_new (t_symbol *s, int argc, t_atom *argv)
   x->clock_done = clock_new(x, (t_method)aubiostretchsf_tilde_tick);
   x->transpose = 0.;
   x->stretch = 1.;
+  //x->opened = 0;
   x->playing = 0;
+  x->loop = 0;
   x->ended = 0;
+  x->waited_opening = 0;
   x->inlet_s = floatinlet_new (&x->x_obj, &x->stretch);
   x->inlet_t = floatinlet_new (&x->x_obj, &x->transpose);
   x->outlet = outlet_new(&x->x_obj, gensym("signal"));
@@ -118,19 +135,30 @@ aubiostretchsf_tilde_open (t_aubiostretchsf_tilde *x, t_symbol *s, int argc, t_a
     return;
   }
   x->playing = 0;
-  // TODO: add aubio_timestretch_open method
-  if (x->o) del_aubio_timestretch(x->o);
-  x->o = new_aubio_timestretch(uri->s_name, "default", 1., sys_getblksize(),
-      sys_getsr());
+  //x->opened = 0;
+  //post("aubiostretchsf~: open %s", uri->s_name);
+  if (x->o == NULL) {
+    x->o = new_aubio_timestretch(uri->s_name, "default", 1., sys_getblksize(),
+        sys_getsr());
+    //if (x->o) x->opened = aubio_timestretch_get_opened(x->o);
+  } else {
+    if (!aubio_timestretch_queue(x->o, uri->s_name, sys_getsr())) {
+      //x->opened = aubio_timestretch_get_opened(x->o);
+    }
+  }
 }
 
 void
 aubiostretchsf_tilde_float(t_aubiostretchsf_tilde *x, t_floatarg f) {
-  if (x->o == NULL) return;
+  if (!x->o) return;
+  if (f == 3) {
+    x->loop = !x->loop;
+  } else
   if (f == 2) {
     uint_t res = aubio_timestretch_seek(x->o, 0);
     if (res != 0)
       post("failed seeking");
+    x->loop = 0;
     x->ended = 0;
     x->playing = 1;
   } else if (f == 1) {
