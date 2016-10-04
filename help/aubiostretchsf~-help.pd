@@ -1,26 +1,114 @@
-#N canvas 306 201 1059 541 12;
+#N canvas 397 89 968 664 12;
+#X obj 79 346 dac~;
+#X floatatom 195 250 5 0 0 0 - #0-stretch -, f 5;
+#X floatatom 302 251 5 0 0 0 - #0-transpose -, f 5;
+#X obj 526 271 hsl 256 25 0.025 40 1 1 \$0-stretch \$0-instretch empty
+-2 -8 0 10 -262144 -1 -1 12750 1;
+#X obj 526 381 hsl 256 25 -24 24 0 1 \$0-dtranspose empty empty -2
+-8 0 10 -262144 -1 -1 12750 1;
+#X msg 754 251 1;
+#X msg 754 361 0;
+#X msg 89 162 1;
+#X msg 99 188 0;
+#X obj 302 318 bng 25 250 50 0 empty empty empty 17 7 0 10 -262144
+-1 -1;
+#X msg 209 164 2;
+#X msg 79 122 open movie.mov \, 2, f 20;
+#X text 521 248 stretch ratio: [0.025 \, 40.];
+#X text 247 165 trigger;
+#X text 126 165 play;
+#X text 136 190 pause;
+#X text 23 408 Like readsf~ \, aubiostretchsf~ will output a bang on
+its right outlet when the file finished playing.;
+#X text 448 16 aubiostrecthsf~---------------, f 15;
+#X text 23 546 Note: beware of high stretch ratios \, which require
+higher cpu usage.;
+#X text 245 316 end of file, f 6;
+#N canvas 354 220 1009 484 stress-tests 0;
 #X obj 45 278 dac~;
 #X floatatom 117 210 5 0 0 0 - - -, f 5;
 #X floatatom 226 211 5 0 0 0 - - -, f 5;
-#X obj 446 181 hsl 256 25 0.025 40 1 0 empty empty empty -2 -8 0 10
--262144 -1 -1 14450 1;
-#X obj 446 291 hsl 256 25 -24 24 0 0 empty empty empty -2 -8 0 10 -262144
--1 -1 16250 1;
-#X msg 674 161 1;
-#X msg 674 271 0;
-#X obj 443 214 s \$0-stretch;
-#X obj 443 326 s \$0-transpose;
 #X obj 226 180 r \$0-transpose;
 #X obj 117 180 r \$0-stretch;
 #X msg 59 124 1;
 #X msg 59 148 0;
-#X obj 176 321 bng 25 250 50 0 empty empty empty 17 7 0 10 -262144
--1 -1;
-#X obj 176 353 spigot;
-#X obj 221 319 tgl 25 0 empty empty empty 17 7 0 10 -262144 -1 -1 1
+#X msg 239 144 2;
+#X obj 59 240 aubiostretchsf~;
+#X msg 202 81 open movie.mov \, 2, f 20;
+#X msg 202 48 open compressed.m4a \, 1;
+#X text 277 145 trigger;
+#X text 96 124 play;
+#X text 96 150 pause;
+#X msg 201 16 open /usr/share/puredata/doc/sound/voice.wav \, 2;
+#X msg 431 124 open;
+#X msg 430 149 open /dev/null;
+#X msg 330 301 2;
+#X obj 333 247 bang;
+#X obj 528 241 tgl 15 0 empty empty empty 17 7 0 10 -262144 -1 -1 0
 1;
-#X text 256 322 loop;
-#N canvas 1 144 450 300 stretch2bpm 0;
+#X obj 494 303 del 1;
+#X obj 445 317 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144
+-1 -1;
+#X msg 497 114 2 \, 1, f 8;
+#X obj 290 367 metro 20;
+#X obj 290 344 tgl 15 0 empty empty empty 17 7 0 10 -262144 -1 -1 0
+1;
+#X msg 260 399 open /usr/share/puredata/doc/sound/voice2.wav \, 1 \,
+0 \, 2;
+#X obj 631 43 tgl 15 0 empty empty empty 17 7 0 10 -262144 -1 -1 0
+1;
+#X obj 619 70 metro 5;
+#X msg 622 162 open compressed.m4a, f 20;
+#X msg 428 186 open movie.mov, f 20;
+#X msg 439 59 open compressed.m4a \, 2;
+#X obj 328 275 del 300;
+#X obj 713 328 print hello;
+#X obj 734 287 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144
+-1 -1;
+#X msg 428 216 open movie.wav \, open movie.mov \, 1 \, 0 \, 2 \, open
+movie.mov \, open sad.wav \, 1 \, 2 \, open movie.mov \, 0 \, 1;
+#X obj 527 264 metro 100;
+#X msg 111 444 open https://aubio.org/sounds/black_milk_montreux.mp3
+\, 2;
+#X msg 587 131 open /dev/null \, 1;
+#X connect 1 0 8 1;
+#X connect 2 0 8 2;
+#X connect 3 0 2 0;
+#X connect 4 0 1 0;
+#X connect 5 0 8 0;
+#X connect 6 0 8 0;
+#X connect 7 0 8 0;
+#X connect 8 0 0 0;
+#X connect 8 0 0 1;
+#X connect 9 0 8 0;
+#X connect 10 0 8 0;
+#X connect 14 0 8 0;
+#X connect 15 0 8 0;
+#X connect 16 0 8 0;
+#X connect 17 0 8 0;
+#X connect 18 0 31 0;
+#X connect 19 0 35 0;
+#X connect 20 0 34 0;
+#X connect 20 0 21 0;
+#X connect 23 0 25 0;
+#X connect 24 0 23 0;
+#X connect 25 0 8 0;
+#X connect 26 0 27 0;
+#X connect 27 0 30 0;
+#X connect 28 0 18 0;
+#X connect 28 0 8 0;
+#X connect 29 0 8 0;
+#X connect 29 0 18 0;
+#X connect 30 0 8 0;
+#X connect 31 0 17 0;
+#X connect 33 0 32 0;
+#X connect 34 0 8 0;
+#X connect 35 0 20 0;
+#X connect 36 0 8 0;
+#X connect 37 0 8 0;
+#X restore 723 581 pd stress-tests;
+#N canvas 79 418 575 349 more-stretch-tools 0;
+#N canvas 1 199 450 300 stretch2bpm 0;
 #X obj 127 72 inlet;
 #X obj 127 116 * 100;
 #X obj 127 185 outlet;
@@ -34,10 +122,9 @@
 #X connect 4 1 1 1;
 #X connect 4 1 3 1;
 #X connect 5 0 4 0;
-#X restore 443 409 pd stretch2bpm;
-#X obj 443 379 r \$0-stretch;
-#X floatatom 443 439 5 0 0 0 - - -, f 5;
-#N canvas 1 199 450 300 bpm2stretch 0;
+#X restore 23 89 pd stretch2bpm;
+#X obj 23 59 r \$0-stretch;
+#N canvas 1 265 450 300 bpm2stretch 0;
 #X obj 127 72 inlet;
 #X obj 127 185 outlet;
 #X obj 203 80 t b f;
@@ -51,63 +138,165 @@
 #X connect 3 0 4 0;
 #X connect 4 0 1 0;
 #X connect 5 0 2 0;
-#X restore 605 412 pd bpm2stretch;
-#X obj 605 437 s \$0-stretch;
-#X text 605 354 set bpm change;
-#X obj 736 437 s \$0-bpmref;
-#X msg 744 376 100;
-#X msg 758 404 120;
-#X obj 605 378 nbx 5 24 -1e+37 1e+37 0 0 empty empty empty 0 -8 0 20
--262144 -1 -1 0 256;
-#X text 740 352 set bpm reference;
-#X text 504 436 bpm change;
-#X msg 239 144 2;
-#X obj 176 380 s \$0-start;
-#X obj 59 95 r \$0-start;
-#X obj 59 240 aubiostretchsf~;
-#X msg 201 16 open /usr/share/puredata/doc/sound/voice.wav;
-#X obj 722 269 r \$0-reset;
-#X obj 721 161 r \$0-reset;
-#X obj 69 353 loadbang;
-#X obj 69 380 s \$0-reset;
-#X obj 69 321 bng 25 250 50 0 empty empty empty 17 7 0 10 -262144 -1
+#X restore 176 152 pd bpm2stretch;
+#X text 175 34 set bpm change;
+#X msg 326 52 100;
+#X msg 339 77 120;
+#N canvas 1 89 450 456 tap 0;
+#X obj 105 40 t b b;
+#X obj 105 69 timer;
+#X obj 66 182 f;
+#X obj 132 193 +;
+#X obj 165 166 * 0.25;
+#X obj 66 212 * 0.75;
+#X obj 91 124 t b f;
+#X obj 105 95 moses 1000;
+#X obj 132 326 outlet;
+#X obj 105 10 inlet;
+#X obj 161 295 /;
+#X msg 129 262 60000;
+#X obj 129 226 t b f;
+#X connect 0 0 1 0;
+#X connect 0 1 1 1;
+#X connect 1 0 7 0;
+#X connect 2 0 5 0;
+#X connect 3 0 2 1;
+#X connect 3 0 12 0;
+#X connect 4 0 3 1;
+#X connect 5 0 3 0;
+#X connect 6 0 2 0;
+#X connect 6 1 4 0;
+#X connect 7 0 6 0;
+#X connect 9 0 0 0;
+#X connect 10 0 8 0;
+#X connect 11 0 10 0;
+#X connect 12 0 11 0;
+#X connect 12 1 10 1;
+#X restore 379 81 pd tap;
+#X obj 379 50 bng 25 250 50 0 empty empty empty 17 7 0 10 -262144 -1
 -1;
-#X text 104 325 reset;
-#X msg 202 81 open movie.mov \, 2, f 20;
-#X msg 202 48 open compressed.m4a \, 1;
-#X text 441 158 stretch ratio: [0.025 \, 40.];
-#X text 442 268 transposition: [-24 \, +24];
-#X text 277 145 trigger;
-#X text 96 124 play;
-#X text 96 150 pause;
-#X connect 1 0 32 1;
-#X connect 2 0 32 2;
-#X connect 3 0 7 0;
+#X obj 321 110 nbx 5 24 -1e+37 1e+37 0 0 empty empty empty 0 -8 0 14
+-262144 -1 -1 0 256;
+#X text 322 25 set reference tempo;
+#X obj 321 141 s \$0-bpmref;
+#X obj 175 61 r \$0-bpmchange;
+#X obj 176 177 s \$0-instretch;
+#X obj 23 205 s \$0-inbpmchange;
+#X floatatom 23 119 5 0 0 0 - - -, f 5;
+#X text 71 118 bpm change;
+#N canvas 1 122 450 300 crazy-gate 0;
+#X obj 40 154 *;
+#X obj 40 90 t f f f;
+#X obj 44 182 select 0;
+#X obj 59 45 inlet;
+#X obj 42 218 outlet;
+#X obj 65 130 !=;
+#X connect 0 0 2 0;
+#X connect 1 0 0 0;
+#X connect 1 1 5 1;
+#X connect 1 2 5 0;
+#X connect 2 1 4 0;
+#X connect 3 0 1 0;
+#X connect 5 0 0 1;
+#X restore 23 157 pd crazy-gate;
+#N canvas 1 133 450 300 crazy-gate 0;
+#X obj 40 154 *;
+#X obj 40 90 t f f f;
+#X obj 44 182 select 0;
+#X obj 59 45 inlet;
+#X obj 42 218 outlet;
+#X obj 64 129 !=;
+#X connect 0 0 2 0;
+#X connect 1 0 0 0;
+#X connect 1 1 5 1;
+#X connect 1 2 5 0;
+#X connect 2 1 4 0;
+#X connect 3 0 1 0;
+#X connect 5 0 0 1;
+#X restore 175 110 pd crazy-gate;
+#X connect 0 0 14 0;
+#X connect 1 0 0 0;
+#X connect 2 0 12 0;
 #X connect 4 0 8 0;
+#X connect 5 0 8 0;
+#X connect 6 0 8 0;
+#X connect 7 0 6 0;
+#X connect 8 0 10 0;
+#X connect 11 0 17 0;
+#X connect 14 0 16 0;
+#X connect 16 0 13 0;
+#X connect 17 0 2 0;
+#X restore 723 506 pd more-stretch-tools;
+#N canvas 664 376 450 300 more-shift-tools 0;
+#X obj 85 176 int, f 5;
+#X obj 239 56 tgl 25 0 empty \$0-semitones empty 17 7 0 10 -262144
+-1 -1 0 1;
+#X text 271 55 semitones;
+#X obj 215 123 t b;
+#X obj 86 257 s \$0-transpose;
+#X obj 85 103 r \$0-dtranspose;
+#X obj 85 142 f;
+#X obj 189 171 - 1;
+#X obj 85 216 spigot 0;
+#X obj 177 215 spigot 1;
+#X connect 0 0 8 0;
+#X connect 1 0 3 0;
+#X connect 1 0 7 0;
+#X connect 1 0 8 1;
+#X connect 3 0 6 0;
+#X connect 5 0 6 0;
+#X connect 6 0 0 0;
+#X connect 6 0 9 0;
+#X connect 7 0 9 1;
+#X connect 8 0 4 0;
+#X connect 9 0 4 0;
+#X restore 723 544 pd more-shift-tools;
+#X obj 818 390 tgl 25 1 \$0-semitones empty empty 17 7 0 10 -262144
+-1 -1 0 1;
+#X text 851 397 semitones;
+#X text 194 230 stretch;
+#X text 298 231 tranpose;
+#X text 792 250 reset stretch;
+#X text 789 360 reset pitch;
+#X text 522 358 transposition: [-24. \, +24.];
+#X msg 219 189 3;
+#X text 255 192 toggle loop;
+#X msg 70 97 open compressed.m4a \, 1 \, 3 \, 2;
+#X msg 61 71 open https://aubio.org/sounds/drum.ogg \, 1 \, 3;
+#X msg 49 47 open https://aubio.org/sounds/drum.wav \, 2, f 44;
+#X text 449 58 stream samples from a media file \, time-stretching
+and pitch-shifting the samples when playing them.;
+#X text 450 99 The 'stretch' and 'transpose' parameters can be adjusted
+on the fly.;
+#X text 450 138 aubiostretchsf~ can be used as a replacement for readsf~
+\, and should open most media files \, including video and network
+resources.;
+#X msg 35 23 open /usr/share/puredata/doc/sound/voice.wav \, 1;
+#X obj 806 311 nbx 5 24 -1e+37 1e+37 0 0 \$0-bpmchange \$0-inbpmchange
+empty 0 -8 0 20 -262144 -1 -1 657.813 256;
+#X text 22 503 Sending '2' will start playing again from start. Sending
+'3' will toggle looping mode.;
+#X obj 89 280 aubiostretchsf~, f 27;
+#X text 23 586 When opening a file and sending a play immediately after
+\, there will be a short delay while the file is being opened. The
+number of samples delayed will be printed on the console.;
+#X text 23 448 Unlike readsf~ \, sending '1' after the end of file
+was reached will start playing the file again. Sending '1' before will
+resume playback from where it was left off.;
+#X text 721 628 https://aubio.org/pd-aubio;
+#X connect 1 0 41 1;
+#X connect 2 0 41 2;
 #X connect 5 0 3 0;
 #X connect 6 0 4 0;
-#X connect 9 0 2 0;
-#X connect 10 0 1 0;
-#X connect 11 0 32 0;
-#X connect 12 0 32 0;
-#X connect 13 0 14 0;
-#X connect 14 0 30 0;
-#X connect 15 0 14 1;
-#X connect 17 0 19 0;
-#X connect 18 0 17 0;
-#X connect 20 0 21 0;
-#X connect 24 0 23 0;
-#X connect 25 0 23 0;
-#X connect 26 0 20 0;
-#X connect 29 0 32 0;
-#X connect 31 0 11 0;
-#X connect 32 0 0 0;
-#X connect 32 0 0 1;
-#X connect 32 1 13 0;
-#X connect 33 0 32 0;
-#X connect 34 0 6 0;
-#X connect 35 0 5 0;
-#X connect 36 0 37 0;
-#X connect 38 0 37 0;
-#X connect 40 0 32 0;
-#X connect 41 0 32 0;
+#X connect 7 0 41 0;
+#X connect 8 0 41 0;
+#X connect 10 0 41 0;
+#X connect 11 0 41 0;
+#X connect 30 0 41 0;
+#X connect 32 0 41 0;
+#X connect 33 0 41 0;
+#X connect 34 0 41 0;
+#X connect 38 0 41 0;
+#X connect 41 0 0 0;
+#X connect 41 0 0 1;
+#X connect 41 1 9 0;
