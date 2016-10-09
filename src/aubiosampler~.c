@@ -33,12 +33,11 @@ typedef struct _aubiosampler_tilde
 {
   t_object x_obj;
   aubio_sampler_t *o;
-  fvec_t *out;
   t_inlet *inlet_s;
   t_inlet *inlet_t;
   t_outlet *outlet;
   t_outlet *outlet_done;
-  t_clock *clock_done;
+  t_clock *clock_eof;
   smpl_t stretch;
   smpl_t transpose;
 } t_aubiosampler_tilde;
@@ -51,21 +50,23 @@ aubiosampler_tilde_perform (t_int * w)
   int s_n = (int)w[3];
   uint_t read = 0;
 
-  // post a message if the sampler was started before a file was loaded
+  /* post a message if the sampler was started before a file was loaded */
   uint_t waited = aubio_sampler_get_waited_opening(x->o, s_n);
   if (waited) {
-    pd_error(x, "aubiosampler~: start while opening, waited %.2fms\t(%d samples)",
+    // we could use pd_error(x, ...) here to help tracking late samplers
+    post("aubiosampler~: while opening, waited %.2fms\t(%d samples)",
         1000. * waited / (float)sys_getsr(), waited);
   }
 
-  fvec_t fakevector;
-  fakevector.data = out;
-  fakevector.length = s_n;
+  fvec_t output_vec;
+  output_vec.data = out;
+  output_vec.length = s_n;
 
-  aubio_sampler_do(x->o, &fakevector, &read);
+  aubio_sampler_do(x->o, &output_vec, &read);
 
+  /* signal the end of file with a bang */
   if (aubio_sampler_get_eof(x->o)) {
-    clock_delay(x->clock_done, 0);
+    clock_delay(x->clock_eof, 0);
   }
 
   return (w + 4);
@@ -87,9 +88,6 @@ static void *
 aubiosampler_tilde_new (t_symbol *s, int argc, t_atom *argv)
 {
   t_aubiosampler_tilde *x = (t_aubiosampler_tilde *)pd_new(aubiosampler_tilde_class);
-  x->out = new_fvec(sys_getblksize());
-  if (x->out == NULL) return NULL;
-  x->clock_done = clock_new(x, (t_method)aubiosampler_tilde_tick);
   x->transpose = 0.;
   x->stretch = 1.;
   x->o = new_aubio_sampler(sys_getblksize(), sys_getsr());
@@ -97,6 +95,7 @@ aubiosampler_tilde_new (t_symbol *s, int argc, t_atom *argv)
   x->inlet_s = floatinlet_new (&x->x_obj, &x->stretch);
   x->inlet_t = floatinlet_new (&x->x_obj, &x->transpose);
   x->outlet = outlet_new(&x->x_obj, gensym("signal"));
+  x->clock_eof = clock_new(x, (t_method)aubiosampler_tilde_tick);
   x->outlet_done = outlet_new(&x->x_obj, &s_bang);
   return (void *)x;
 }
@@ -109,9 +108,15 @@ aubiosampler_tilde_open (t_aubiosampler_tilde *x, t_symbol *s, int argc, t_atom 
     post("aubiosampler~: open: no filename given");
     return;
   }
-  aubio_sampler_stop(x->o);
   if (aubio_sampler_queue(x->o, uri->s_name)) {
     error("aubiosampler~: failed queuing %s", uri->s_name);
+  }
+}
+
+static void *
+aubiosampler_tilde_seek (t_aubiosampler_tilde *x, t_floatarg f) {
+  if (aubio_sampler_seek(x->o, (int)f)) {
+    pd_error(x, "aubiosampler~: failed seeking to %d", (int)f);
   }
 }
 
@@ -135,13 +140,12 @@ aubiosampler_tilde_float(t_aubiosampler_tilde *x, t_floatarg f) {
 void
 aubiosampler_tilde_del (t_aubiosampler_tilde *x)
 {
-  del_fvec(x->out);
   if (x->o) del_aubio_sampler(x->o);
   inlet_free(x->inlet_s);
   inlet_free(x->inlet_t);
   outlet_free(x->outlet);
   outlet_free(x->outlet_done);
-  clock_free(x->clock_done);
+  clock_free(x->clock_eof);
 }
 
 void
@@ -155,6 +159,8 @@ aubiosampler_tilde_setup (void)
   class_addfloat (aubiosampler_tilde_class, (t_method)aubiosampler_tilde_float);
   class_addmethod (aubiosampler_tilde_class,
       (t_method)aubiosampler_tilde_open, gensym ("open"), A_GIMME, 0);
+  class_addmethod (aubiosampler_tilde_class,
+      (t_method)aubiosampler_tilde_seek, gensym ("seek"), A_DEFFLOAT, 0);
   class_addmethod (aubiosampler_tilde_class,
       (t_method)aubiosampler_tilde_dsp, gensym ("dsp"), A_CANT, 0);
 }
