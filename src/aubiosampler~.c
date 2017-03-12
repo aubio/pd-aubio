@@ -114,7 +114,7 @@ aubiosampler_tilde_open (t_aubiosampler_tilde *x, t_symbol *s, int argc, t_atom 
   t_symbol *uri = atom_getsymbolarg(0, argc, argv);
   if (!*uri->s_name) {
     post("aubiosampler~: open: no filename given");
-    return;
+    return NULL;
   }
   if (aubio_sampler_queue(x->o, uri->s_name)) {
     error("aubiosampler~: failed queuing %s", uri->s_name);
