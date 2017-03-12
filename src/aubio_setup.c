@@ -3,7 +3,7 @@
 #include <aubio/aubio.h>
 #include <string.h>
 
-#ifdef HAVE_PTHREAD
+#ifdef HAVE_PTHREAD_H
 #include <pthread.h>
 pthread_mutex_t aubio_log_mutex;
 #else
@@ -43,7 +43,7 @@ void aubio_custom_log(int level, const char *message, void *data)
   if ((pos=strchr(message, '\n')) != NULL) {
         *pos = '\0';
   }
-#ifdef HAVE_PTHREAD
+#ifdef HAVE_PTHREAD_H
   pthread_mutex_lock(&aubio_log_mutex);
 #endif
   if (level == AUBIO_LOG_ERR) {
@@ -53,7 +53,7 @@ void aubio_custom_log(int level, const char *message, void *data)
   } else {
     post(message);
   }
-#ifdef HAVE_PTHREAD
+#ifdef HAVE_PTHREAD_H
   pthread_mutex_unlock(&aubio_log_mutex);
 #endif
 }
@@ -61,7 +61,7 @@ void aubio_custom_log(int level, const char *message, void *data)
 void aubio_setup (void)
 {
   // register custom log function for errors and warnings
-#ifdef HAVE_PTHREAD
+#ifdef HAVE_PTHREAD_H
   pthread_mutex_init(&aubio_log_mutex, 0);
 #endif
   aubio_log_set_function(aubio_custom_log, NULL);

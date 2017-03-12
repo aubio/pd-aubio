@@ -47,7 +47,7 @@ def configure(ctx):
     ctx.check(header_name='m_pd.h')
 
     ctx.check(header_name='pthread.h', mandatory = False)
-    needs_pthread = ctx.get_define("HAVE_PTHREAD") is not None
+    needs_pthread = ctx.get_define("HAVE_PTHREAD_H") is not None
     if needs_pthread:
         ctx.check_cc(lib="pthread", uselib_store="PTHREAD", mandatory=needs_pthread)
 
