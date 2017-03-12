@@ -6,6 +6,8 @@
 #ifdef HAVE_PTHREAD
 #include <pthread.h>
 pthread_mutex_t aubio_log_mutex;
+#else
+#warning "Not using thread lock for logging"
 #endif
 
 char aubio_version[] = "aubio external for pd, version " PACKAGE_VERSION;
