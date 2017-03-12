@@ -1,4 +1,4 @@
-#N canvas 128 125 1063 642 12;
+#N canvas 126 125 1063 642 12;
 #X obj 227 326 dac~;
 #X floatatom 346 250 5 0 0 0 - #0-stretch -, f 5;
 #X floatatom 453 251 5 0 0 0 - #0-transpose -, f 5;
@@ -19,7 +19,7 @@
 #X text 23 506 Note: beware of high stretch ratios \, which require
 higher cpu usage.;
 #X text 396 316 end of file, f 6;
-#N canvas 352 150 1009 617 stress-tests 1;
+#N canvas 350 150 1009 617 stress-tests 0;
 #X floatatom 117 210 5 0 0 0 - - -, f 5;
 #X floatatom 226 211 5 0 0 0 - - -, f 5;
 #X obj 226 180 r \$0-transpose;
@@ -71,7 +71,7 @@ movie.mov \, open sad.wav \, 1 \, 2 \, open movie.mov \, 0 \, 1, f
 #X msg 451 168 set 4096 1 0.5;
 #X msg 451 195 set 4096 1 2;
 #X obj 407 260 switch~ 64 1 1;
-#X obj 59 240 aubiossampler~;
+#X obj 59 240 aubiosampler~;
 #X connect 1 0 20 1;
 #X connect 2 0 20 2;
 #X connect 3 0 2 0;
