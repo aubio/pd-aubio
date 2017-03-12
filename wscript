@@ -26,6 +26,7 @@ def configure(ctx):
         # add default include path for both pd and pd-extended
         # set CFLAGS for custom location
         ctx.env.CFLAGS += ['-I/Applications/Pd-0.47-1.app/Contents/Resources/src']
+        ctx.env.CFLAGS += ['-I/Applications/Pd-0.47-1-64bit.app/Contents/Resources/src']
         ctx.env.CFLAGS += ['-I/Applications/Pd-extended.app/Contents/Resources/include']
         ctx.env.CFLAGS += ['-arch', 'i386', '-arch', 'x86_64']
         ctx.env.LINKFLAGS += ['-arch', 'i386', '-arch', 'x86_64']
