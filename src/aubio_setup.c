@@ -22,7 +22,6 @@ extern void aubiopitch_tilde_setup (void);
 extern void aubiozcr_tilde_setup (void);
 extern void aubioshift_tilde_setup (void);
 extern void aubiosampler_tilde_setup(void);
-extern void aubiostretchsf_tilde_setup (void);
 
 void *aubio_new (void)
 {
@@ -54,7 +53,6 @@ void aubio_setup (void)
   aubiozcr_tilde_setup();
   aubioshift_tilde_setup();
   aubiosampler_tilde_setup();
-  aubiostretchsf_tilde_setup();
   aubio_class = class_new(gensym("aubio"), (t_newmethod)aubio_new, 0,
       sizeof(t_aubio), 0, 0);
 }
