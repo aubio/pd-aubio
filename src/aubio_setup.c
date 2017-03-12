@@ -3,6 +3,11 @@
 #include <aubio/aubio.h>
 #include <string.h>
 
+#ifdef HAVE_PTHREAD
+#include <pthread.h>
+pthread_mutex_t aubio_log_mutex;
+#endif
+
 char aubio_version[] = "aubio external for pd, version " PACKAGE_VERSION;
 
 static t_class *aubio_class;
@@ -36,15 +41,29 @@ void aubio_custom_log(int level, const char *message, void *data)
   if ((pos=strchr(message, '\n')) != NULL) {
         *pos = '\0';
   }
-  post(message);
+#ifdef HAVE_PTHREAD
+  pthread_mutex_lock(&aubio_log_mutex);
+#endif
+  if (level == AUBIO_LOG_ERR) {
+    error(message);
+  } else if (level == AUBIO_LOG_WRN) {
+    logpost(NULL, 3, message);
+  } else {
+    post(message);
+  }
+#ifdef HAVE_PTHREAD
+  pthread_mutex_unlock(&aubio_log_mutex);
+#endif
 }
 
 void aubio_setup (void)
 {
-  post(aubio_version);
   // register custom log function for errors and warnings
-  aubio_log_set_level_function(AUBIO_LOG_ERR, aubio_custom_log, NULL);
-  aubio_log_set_level_function(AUBIO_LOG_WRN, aubio_custom_log, NULL);
+#ifdef HAVE_PTHREAD
+  pthread_mutex_init(&aubio_log_mutex, 0);
+#endif
+  aubio_log_set_function(aubio_custom_log, NULL);
+  post(aubio_version);
   aubioonset_tilde_setup();
   aubiotempo_tilde_setup();
   aubiotss_tilde_setup();
