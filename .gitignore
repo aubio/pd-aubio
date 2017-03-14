@@ -4,7 +4,9 @@
 
 # waf stuff
 .lock-waf*
-.waf-*
+waf
+waflib/
+.waf*
 build/
 
 # python stuff
