@@ -10,24 +10,41 @@ For more information, see:
 Building
 --------
 
-pd-aubio uses waf. To configure and build it, run:
+To configure and build pd-aubio, run:
+
+    $ make
+
+pd-aubio uses waf. To find out more information about build options:
+
+    $ ./scripts/get_waf.sh
+    $ ./waf configure --help
+
+Once configured, the external can be built with:
 
     $ ./waf configure build
 
-If you have aubio installed in an unusual location, just set your
-`PKG_CONFIG_PATH` accordingly. For instance, to build against aubio installed
-in /var/tmp/aubio:
+If you have aubio installed in an unusual location, you might need to set
+`PKG_CONFIG_PATH` accordingly.
 
-    $ PKG_CONFIG_PATH=/var/tmp/aubio/lib/pkgconfig waf \
-        distclean configure build install --prefix=/var/tmp/aubio
+For instance, to build against aubio installed in `/var/tmp/aubio`:
+
+    $ export PKG_CONFIG_PATH=/var/tmp/aubio/lib/pkgconfig
+    $ waf distclean configure build
 
 Installing
 ----------
 
-To install the aubio external for puredata on your system, run the following as
-root:
+To install pd-aubio:
 
-    # make install
+    # ./waf install
+
+Depending on the installation location, you might need to run this command with
+sudo (or as the user root), or to copy the files manually.
+
+To install it in a different location, you could also try:
+
+    $ ./waf configure --prefix=/my/favorite/place build
+    # ./waf install
 
 Running
 -------
@@ -40,4 +57,4 @@ Alternatively, you can create an object [aubio] to initialize the external.
 
 If you want to use the external without installing it, the above command should
 work as expected from the pd-aubio source directory. If needed, set your
-`LD_LIBRARY_PATH` to include the path to the aubio library.
+`LD_LIBRARY_PATH` to include the path to your libaubio installation.
